@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.ControladorDeInterfazInicial">
+    <children>
+        <ImageView fx:id="fondo" fitHeight="720" fitWidth="1280" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <Image url="@InterfazInicial.jpg" />
+        </ImageView>
+
+        <VBox alignment="CENTER" spacing="60" AnchorPane.bottomAnchor="36.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+            <children>
+                <Button fx:id="botonJugar" defaultButton="true" onAction="#alDarJugar" prefHeight="128.0" prefWidth="259.0" text="Jugar" textAlignment="CENTER" wrapText="true">
+               <font>
+                  <Font name="System Bold Italic" size="50.0" />
+               </font>
+               <effect>
+                  <Glow />
+               </effect></Button>
+                <Button fx:id="botonCreditos" onAction="#alDarCreditos" prefHeight="128.0" prefWidth="315.0" text="Créditos" textAlignment="CENTER">
+               <font>
+                  <Font name="System Bold Italic" size="50.0" />
+               </font></Button>
+                <Button fx:id="botonSalir" cancelButton="true" onAction="#alDarSalir" prefHeight="128.0" prefWidth="260.0" text="Salir" textAlignment="CENTER">
+               <font>
+                  <Font name="System Bold Italic" size="50.0" />
+               </font></Button>
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>

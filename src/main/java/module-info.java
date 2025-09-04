@@ -1,4 +1,4 @@
-module com.example.solitariogui_pr1 {
+module com.example.solitariogui_pr {
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.web;
@@ -11,6 +11,8 @@ module com.example.solitariogui_pr1 {
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
 
-    opens com.example.solitariogui_pr1 to javafx.fxml;
-    exports com.example.solitariogui_pr1;
+    opens Ejecutable to javafx.fxml;
+    exports Ejecutable;
+    opens GUI to javafx.fxml;
+    exports GUI;
 }
