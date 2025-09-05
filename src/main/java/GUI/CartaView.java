@@ -116,12 +116,4 @@ public class CartaView {
         return raiz;
     }
 
-    public void setUserData(Object data) {
-        raiz.setUserData(data);
-    }
-
-    public Object getUserData() {
-        return raiz.getUserData();
-    }
-
 }

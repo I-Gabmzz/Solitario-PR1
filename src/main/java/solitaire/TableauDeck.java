@@ -45,6 +45,9 @@ public class TableauDeck {
                 }
             }
         }
+        if (!cartas.isEmpty()) {
+            cartas.getLast().makeFaceUp();
+        }
         return removed;
     }
 
@@ -98,7 +101,7 @@ public class TableauDeck {
      *
      * @return la carta que removió, null si estaba vacio
      */
-    CartaInglesa removerUltimaCarta() {
+    public CartaInglesa removerUltimaCarta() {
         CartaInglesa ultimaCarta = null;
         if (!cartas.isEmpty()) {
             ultimaCarta = cartas.getLast();

@@ -22,7 +22,6 @@ public class SolitaireGame {
         wastePile = new WastePile();
         createTableaux();
         createFoundations();
-        wastePile.addCartas(drawPile.retirarCartas());
     }
 
 

@@ -3,7 +3,6 @@ package GUI;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.Label;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;

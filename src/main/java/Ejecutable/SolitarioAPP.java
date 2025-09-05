@@ -11,7 +11,6 @@ public class SolitarioAPP extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         Scene scene = new Scene(FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/GUI/InterfazInicial.fxml"))), 1280, 720);
-        stage.setTitle("Solitario");
         stage.setScene(scene);
         stage.setFullScreen(true);
         stage.show();

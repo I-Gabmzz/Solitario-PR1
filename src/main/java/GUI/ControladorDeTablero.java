@@ -17,14 +17,17 @@ import java.util.Objects;
 
 public class ControladorDeTablero {
     private solitaire.SolitaireGame juego;
+
     @FXML private ImageView fondo;
     @FXML private javafx.scene.layout.HBox centro;
     @FXML private javafx.scene.layout.StackPane contMazo;
     @FXML private javafx.scene.layout.StackPane contDescarte;
     @FXML private javafx.scene.layout.StackPane bas1, bas2, bas3, bas4;
     @FXML private Pane col1, col2, col3, col4, col5, col6, col7;
+
     @FXML private Button botonNuevo;
     @FXML private Button botonMenu;
+
     @FXML private GUI.CartaView col1c1Controller;
     @FXML private GUI.CartaView col2c1Controller, col2c2Controller;
     @FXML private GUI.CartaView col3c1Controller, col3c2Controller, col3c3Controller;
@@ -32,12 +35,16 @@ public class ControladorDeTablero {
     @FXML private GUI.CartaView col5c1Controller, col5c2Controller, col5c3Controller, col5c4Controller, col5c5Controller;
     @FXML private GUI.CartaView col6c1Controller, col6c2Controller, col6c3Controller, col6c4Controller, col6c5Controller, col6c6Controller;
     @FXML private GUI.CartaView col7c1Controller, col7c2Controller, col7c3Controller, col7c4Controller, col7c5Controller, col7c6Controller, col7c7Controller;
-    private enum Origen { TABLEAU, WASTE }
+    private java.util.List<javafx.scene.layout.Pane> columnasPanes;
+    private java.util.List<java.util.List<GUI.CartaView>> vistasColumnas;
 
 
+    private enum Origen { TABLERO, DESCARTE }
+    private static final int MAX_CARTAS = 13;
     private double pasoY = 40;
     private double anchoCarta = 150;
     private double altoCarta  = 200;
+
     private static final String BOTONES_NORMALES =
             "-fx-background-color: rgba(255,255,255,0.85);" +
                     "-fx-border-color: #d32f2f;" +
@@ -67,6 +74,18 @@ public class ControladorDeTablero {
         int valor;
         boolean esTope;
     }
+    private static String encode(DragInfo d) {
+        return d.origen + ";" + d.col + ";" + d.valor + ";" + (d.esTope ? "1" : "0");
+    }
+    private static DragInfo decode(String s) {
+        String[] p = s.split(";");
+        DragInfo d = new DragInfo();
+        d.origen = Origen.valueOf(p[0]);
+        d.col = Integer.parseInt(p[1]);
+        d.valor = Integer.parseInt(p[2]);
+        d.esTope = "1".equals(p[3]);
+        return d;
+    }
 
     @FXML
     private void initialize() {
@@ -89,75 +108,119 @@ public class ControladorDeTablero {
         }
         darEstiloAlBoton(botonNuevo);
         darEstiloAlBoton(botonMenu);
-        refrescarZonaSuperior(juego);
-        refrescarTableau(juego);
+        columnasPanes = java.util.List.of(col1, col2, col3, col4, col5, col6, col7);
+
+
+        java.util.List<GUI.CartaView> c1 = new java.util.ArrayList<>();
+        c1.add(col1c1Controller);
+        java.util.List<GUI.CartaView> c2 = new java.util.ArrayList<>();
+        c2.add(col2c1Controller); c2.add(col2c2Controller);
+        java.util.List<GUI.CartaView> c3 = new java.util.ArrayList<>();
+        c3.add(col3c1Controller); c3.add(col3c2Controller); c3.add(col3c3Controller);
+        java.util.List<GUI.CartaView> c4 = new java.util.ArrayList<>();
+        c4.add(col4c1Controller); c4.add(col4c2Controller); c4.add(col4c3Controller); c4.add(col4c4Controller);
+        java.util.List<GUI.CartaView> c5 = new java.util.ArrayList<>();
+        c5.add(col5c1Controller); c5.add(col5c2Controller); c5.add(col5c3Controller); c5.add(col5c4Controller); c5.add(col5c5Controller);
+        java.util.List<GUI.CartaView> c6 = new java.util.ArrayList<>();
+        c6.add(col6c1Controller); c6.add(col6c2Controller); c6.add(col6c3Controller); c6.add(col6c4Controller); c6.add(col6c5Controller); c6.add(col6c6Controller);
+        java.util.List<GUI.CartaView> c7 = new java.util.ArrayList<>();
+        c7.add(col7c1Controller); c7.add(col7c2Controller); c7.add(col7c3Controller); c7.add(col7c4Controller); c7.add(col7c5Controller); c7.add(col7c6Controller); c7.add(col7c7Controller);
+
+        java.util.function.Function<java.util.List<GUI.CartaView>, java.util.List<GUI.CartaView>> limpia = lista -> {
+            lista.removeIf(java.util.Objects::isNull);
+            return lista;
+        };
+
+        vistasColumnas = new java.util.ArrayList<>(java.util.List.of(
+                limpia.apply(c1), limpia.apply(c2), limpia.apply(c3), limpia.apply(c4),
+                limpia.apply(c5), limpia.apply(c6), limpia.apply(c7)
+        ));
+
+        for (int i = 0; i < columnasPanes.size(); i++) {
+            asegurarSlots(columnasPanes.get(i), vistasColumnas.get(i), MAX_CARTAS);
+        }
+
+        configurarInteracciones();
+        actualizarZonaSuperior(juego);
+        actualizarTablero(juego);
     }
 
-    private void refrescarTableau(solitaire.SolitaireGame juego) {
-        java.util.ArrayList<solitaire.TableauDeck> tabs = juego.getTableau();
+    private void asegurarSlots(javafx.scene.layout.Pane contenedor,
+                               java.util.List<GUI.CartaView> lista, int requeridos) {
+        while (lista.size() < requeridos) {
+            try {
+                var loader = new javafx.fxml.FXMLLoader(getClass().getResource("/GUI/CartaView.fxml"));
+                javafx.scene.layout.StackPane root = loader.load();
+                GUI.CartaView cartaView = loader.getController();
+
+                cartaView.mostrarSlot(false);
+                cartaView.setVisible(false);
+
+                contenedor.getChildren().add(root);
+                lista.add(cartaView);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                break;
+            }
+        }
+    }
+
+
+    private void actualizarTablero(solitaire.SolitaireGame juego) {
+        var tabs = juego.getTableau();
         if (tabs == null || tabs.size() < 7) return;
 
-        java.util.List<GUI.CartaView[]> vistas = java.util.List.of(
-                new GUI.CartaView[]{ col1c1Controller },
-                new GUI.CartaView[]{ col2c1Controller, col2c2Controller },
-                new GUI.CartaView[]{ col3c1Controller, col3c2Controller, col3c3Controller },
-                new GUI.CartaView[]{ col4c1Controller, col4c2Controller, col4c3Controller, col4c4Controller },
-                new GUI.CartaView[]{ col5c1Controller, col5c2Controller, col5c3Controller, col5c4Controller, col5c5Controller },
-                new GUI.CartaView[]{ col6c1Controller, col6c2Controller, col6c3Controller, col6c4Controller, col6c5Controller, col6c6Controller },
-                new GUI.CartaView[]{ col7c1Controller, col7c2Controller, col7c3Controller, col7c4Controller, col7c5Controller, col7c6Controller, col7c7Controller }
-        );
-
         for (int i = 0; i < 7; i++) {
-            solitaire.TableauDeck td = tabs.get(i);
-            java.util.ArrayList<DeckOfCards.CartaInglesa> cartas = (td != null) ? td.getCards() : new java.util.ArrayList<>();
-            GUI.CartaView[] ranuras = vistas.get(i);
+            var td = tabs.get(i);
+            var cartas = td.getCards();
+            var vistas = vistasColumnas.get(i);
 
-            for (GUI.CartaView cv : ranuras) if (cv != null) cv.setVisible(false);
+            asegurarSlots(columnasPanes.get(i), vistas, MAX_CARTAS);
 
-            for (int j = 0; j < cartas.size() && j < ranuras.length; j++) {
-                DeckOfCards.CartaInglesa c = cartas.get(j);
-                GUI.CartaView cv = ranuras[j];
-                if (cv == null) continue;
+            int n = cartas.size();
+            int mostrar = Math.min(MAX_CARTAS, n);
+            int start = Math.max(0, n - MAX_CARTAS);
 
-                String tipo = tipoDesdePalo(c.getPalo());
-                cv.establecerPorNumero(c.getValor(), tipo);
+            for (int j = 0; j < mostrar; j++) {
+                var carta = cartas.get(start + j);
+                var cartaView = vistas.get(j);
 
-                cv.establecerBocaArriba(c.isFaceup());
+                String tipo = tipoDesdePalo(carta.getPalo());
+                cartaView.establecerPorNumero(carta.getValor(), tipo);
+                cartaView.establecerBocaArriba(carta.isFaceup());
+                cartaView.mostrarSlot(false);
+                cartaView.setVisible(true);
+            }
 
-                cv.mostrarSlot(false);
-                cv.setVisible(true);
+            for (int j = mostrar; j < MAX_CARTAS; j++) {
+                var cv = vistas.get(j);
+                cv.mostrarSlot(true);
+                cv.setVisible(false);
             }
         }
 
-        acomodarColumna(col1, 1);
-        acomodarColumna(col2, 2);
-        acomodarColumna(col3, 3);
-        acomodarColumna(col4, 4);
-        acomodarColumna(col5, 5);
-        acomodarColumna(col6, 6);
-        acomodarColumna(col7, 7);
+        acomodarColumna(col1, MAX_CARTAS);
+        acomodarColumna(col2, MAX_CARTAS);
+        acomodarColumna(col3, MAX_CARTAS);
+        acomodarColumna(col4, MAX_CARTAS);
+        acomodarColumna(col5, MAX_CARTAS);
+        acomodarColumna(col6, MAX_CARTAS);
+        acomodarColumna(col7, MAX_CARTAS);
     }
 
 
-    private void acomodarColumna(Pane col, int cuantosMax) {
+    private void acomodarColumna(javafx.scene.layout.Pane col, int cuantosMax) {
         var hijos = col.getChildren();
-
-        double y = 0.0;
+        int espacio = 0;
         int activos = 0;
 
-        for (javafx.scene.Node n : hijos) {
-            if (!n.isManaged() || !n.isVisible()) continue; // ignora placeholders ocultos
-            n.setLayoutY(y);                                // mejor que translateY en Pane
-            y += pasoY;
+        for (var node : hijos) {
+            node.setLayoutX(0);
+            node.setLayoutY(espacio);
+            espacio += pasoY;
             activos++;
+            if (activos >= cuantosMax) break;
         }
-        int usados = Math.max(activos, cuantosMax);
-        double altoNecesario = (usados > 0 ? (usados - 1) * pasoY + altoCarta : altoCarta);
-
-        col.setMinWidth(anchoCarta);
-        col.setPrefWidth(anchoCarta);
-        col.setMinHeight(altoNecesario);
-        col.setPrefHeight(altoNecesario);
     }
 
     public void alDarNuevoJuego(javafx.event.ActionEvent actionEvent) {
@@ -166,15 +229,15 @@ public class ControladorDeTablero {
 
     public void alDarMenu(javafx.event.ActionEvent actionEvent) throws IOException {
         Parent raizMenu = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/GUI/InterfazInicial.fxml")));
-        Stage venTablero = (Stage) botonMenu.getScene().getWindow();
-        Stage venMenu = new Stage();
-        venMenu.setTitle("Solitario – Menú");
-        venMenu.setScene(new Scene(raizMenu, venTablero.getWidth(), venTablero.getHeight()));
-        venMenu.setMaximized(venTablero.isMaximized());
-        venMenu.setFullScreen(venTablero.isFullScreen());
+        Stage ventanaTablero = (Stage) botonMenu.getScene().getWindow();
+        Stage vetananMenu = new Stage();
+        vetananMenu.setTitle("Solitario – Menú");
+        vetananMenu.setScene(new Scene(raizMenu, ventanaTablero.getWidth(), ventanaTablero.getHeight()));
+        vetananMenu.setMaximized(ventanaTablero.isMaximized());
+        vetananMenu.setFullScreen(ventanaTablero.isFullScreen());
 
-        venTablero.close();
-        venMenu.show();
+        ventanaTablero.close();
+        vetananMenu.show();
     }
 
     private void darEstiloAlBoton(Button boton) {
@@ -215,39 +278,39 @@ public class ControladorDeTablero {
         });
     }
 
-    private void dibujarSlot(javafx.scene.layout.StackPane cont, double w, double h) {
+    private void dibujarSlot(javafx.scene.layout.StackPane cont, double ancho, double alto) {
         cont.getChildren().clear();
-        var r = new javafx.scene.shape.Rectangle(w, h);
-        r.setArcWidth(14); r.setArcHeight(14);
-        r.setFill(javafx.scene.paint.Color.color(1,1,1, 0.10));
-        r.setStroke(javafx.scene.paint.Color.WHITE);
-        r.setStrokeWidth(2);
-        cont.getChildren().add(r);
+        var espacioCarta = new javafx.scene.shape.Rectangle(ancho, alto);
+        espacioCarta.setArcWidth(14); espacioCarta.setArcHeight(14);
+        espacioCarta.setFill(javafx.scene.paint.Color.color(1,1,1, 0.10));
+        espacioCarta.setStroke(javafx.scene.paint.Color.WHITE);
+        espacioCarta.setStrokeWidth(2);
+        cont.getChildren().add(espacioCarta);
     }
 
-    private void mostrarCubierta(javafx.scene.layout.StackPane cont, double w, double h) {
+    private void mostrarCubierta(javafx.scene.layout.StackPane cont, double ancho, double alto) {
         cont.getChildren().clear();
         var url = getClass().getResource("/Cartas/Cubierta Carta.png");
-        if (url == null) { dibujarSlot(cont, w, h); return; }
-        var iv = new javafx.scene.image.ImageView(new javafx.scene.image.Image(url.toExternalForm()));
-        iv.setFitWidth(w); iv.setFitHeight(h); iv.setPreserveRatio(false);
-        cont.getChildren().add(iv);
+        if (url == null) { dibujarSlot(cont, ancho, alto); return; }
+        var imageView = new javafx.scene.image.ImageView(new javafx.scene.image.Image(url.toExternalForm()));
+        imageView.setFitWidth(ancho); imageView.setFitHeight(alto); imageView.setPreserveRatio(false);
+        cont.getChildren().add(imageView);
     }
 
     private void mostrarCarta(javafx.scene.layout.StackPane cont,
-                              DeckOfCards.CartaInglesa c, double w, double h) {
+                              DeckOfCards.CartaInglesa c, double ancho, double alto) {
         cont.getChildren().clear();
         String tipo = tipoDesdePalo(c.getPalo());
-        String nom  = nombreDesdeValor(c.getValor());
-        String ruta = "/Cartas/" + tipo + "/" + nom + ".png";
+        String nombre  = nombreDesdeValor(c.getValor());
+        String ruta = "/Cartas/" + tipo + "/" + nombre + ".png";
         var url = getClass().getResource(ruta);
-        if (url == null) { dibujarSlot(cont, w, h); return; }
+        if (url == null) { dibujarSlot(cont, ancho, alto); return; }
         var iv = new javafx.scene.image.ImageView(new javafx.scene.image.Image(url.toExternalForm()));
-        iv.setFitWidth(w); iv.setFitHeight(h); iv.setPreserveRatio(false);
+        iv.setFitWidth(ancho); iv.setFitHeight(alto); iv.setPreserveRatio(false);
         cont.getChildren().add(iv);
     }
 
-    private void refrescarZonaSuperior(solitaire.SolitaireGame juego) {
+    private void actualizarZonaSuperior(solitaire.SolitaireGame juego) {
         if (juego.getDrawPile() != null && juego.getDrawPile().hayCartas()) {
             mostrarCubierta(contMazo, anchoCarta, altoCarta);
         } else {
@@ -261,12 +324,12 @@ public class ControladorDeTablero {
             mostrarCarta(contDescarte, topWaste, anchoCarta, altoCarta);
         }
 
-        var fnds = juego.getFoundation();
+        var foundation = juego.getFoundation();
         var bases = new javafx.scene.layout.StackPane[]{ bas1, bas2, bas3, bas4 };
         for (int i = 0; i < bases.length; i++) {
             var base = bases[i];
-            DeckOfCards.CartaInglesa top = (fnds != null && i < fnds.size() && fnds.get(i) != null)
-                    ? fnds.get(i).getUltimaCarta() : null;
+            DeckOfCards.CartaInglesa top = (foundation != null && i < foundation.size() && foundation.get(i) != null)
+                    ? foundation.get(i).getUltimaCarta() : null;
             if (top == null) {
                 dibujarSlot(base, anchoCarta, altoCarta);
             } else {
@@ -305,4 +368,240 @@ public class ControladorDeTablero {
             default: return "As";
         }
     }
+
+    private void configurarInteracciones() {
+        contMazo.setOnMouseClicked(e -> {
+            if (juego.getDrawPile() != null && juego.getDrawPile().hayCartas()) {
+                juego.drawCards();
+            } else {
+                juego.reloadDrawPile();
+            }
+            actualizarZonaSuperior(juego);
+        });
+        Pane[] columnas = new Pane[]{ col1, col2, col3, col4, col5, col6, col7 };
+        for (int i = 0; i < columnas.length; i++) {
+            final int destinoCol = i;
+            Pane colPane = columnas[i];
+
+            colPane.setOnDragOver(evento -> {
+                var arrastre = evento.getDragboard();
+                if (arrastre.hasString()) {
+                    DragInfo info = decode(arrastre.getString());
+                    if (puedeSoltarseEnTablero(info, destinoCol)) {
+                        evento.acceptTransferModes(javafx.scene.input.TransferMode.MOVE);
+                    }
+                }
+                evento.consume();
+            });
+
+            colPane.setOnDragDropped(evento -> {
+                var arrastre = evento.getDragboard();
+                boolean ok = false;
+                if (arrastre.hasString()) {
+                    DragInfo info = decode(arrastre.getString());
+                    ok = aplicarDropEnTablero(info, destinoCol);
+                }
+                evento.setDropCompleted(ok);
+                evento.consume();
+
+                actualizarZonaSuperior(juego);
+                actualizarTablero(juego);
+            });
+        }
+
+        javafx.scene.layout.StackPane[] bases = new javafx.scene.layout.StackPane[]{ bas1, bas2, bas3, bas4 };
+        for (int i = 0; i < bases.length; i++) {
+            final int Baseref = i;
+            javafx.scene.layout.StackPane basePane = bases[i];
+
+            basePane.setOnDragOver(evento -> {
+                var arrastre = evento.getDragboard();
+                if (arrastre.hasString()) {
+                    DragInfo info = decode(arrastre.getString());
+                    if (puedeSoltarseEnFoundation(info, Baseref)) {
+                        evento.acceptTransferModes(javafx.scene.input.TransferMode.MOVE);
+                    }
+                }
+                evento.consume();
+            });
+
+            basePane.setOnDragDropped(evento -> {
+                var arrastre = evento.getDragboard();
+                boolean ok = false;
+                if (arrastre.hasString()) {
+                    DragInfo info = decode(arrastre.getString());
+                    ok = aplicarDropEnFoundation(info, Baseref);
+                }
+                evento.setDropCompleted(ok);
+                evento.consume();
+                actualizarZonaSuperior(juego);
+                actualizarTablero(juego);
+            });
+        }
+
+        for (int col = 0; col < vistasColumnas.size(); col++) {
+            var lista = vistasColumnas.get(col);
+            for (int slot = 0; slot < lista.size(); slot++) {
+                GUI.CartaView cartaView = lista.get(slot);
+                if (cartaView == null) continue;
+
+                cartaView.getRoot().setOnDragDetected(null);
+                final int colFinal = col, slotFinal = slot;
+
+                cartaView.getRoot().setOnDragDetected(evento -> {
+                    var tablero = juego.getTableau();
+                    if (tablero == null || colFinal >= tablero.size()) return;
+
+                    var cartas = tablero.get(colFinal).getCards();
+
+                    int mostrar = Math.min(lista.size(), cartas.size());
+                    int start   = cartas.size() - mostrar;
+
+                    if (slotFinal >= mostrar) return;
+
+                    int comprobacion = start + slotFinal;
+                    DeckOfCards.CartaInglesa carta = cartas.get(comprobacion);
+                    if (!carta.isFaceup()) return;
+
+                    boolean esTope = (comprobacion == cartas.size() - 1);
+
+                    DragInfo info = new DragInfo();
+                    info.origen = Origen.TABLERO;
+                    info.col    = colFinal;
+                    info.valor  = carta.getValor();
+                    info.esTope = esTope;
+
+                    var arrastre = cartaView.getRoot().startDragAndDrop(javafx.scene.input.TransferMode.MOVE);
+                    var content = new javafx.scene.input.ClipboardContent();
+                    content.putString(encode(info));
+                    arrastre.setContent(content);
+
+                    var img = cartaView.getRoot().snapshot(null, null);
+                    arrastre.setDragView(img, img.getWidth()/2, img.getHeight()/2);
+
+                    evento.consume();
+                });
+            }
+        }
+
+        contDescarte.setOnDragDetected(evento -> {
+            if (juego.getWastePile() != null && juego.getWastePile().hayCartas()) {
+                DeckOfCards.CartaInglesa cima = juego.getWastePile().verCarta();
+                if (cima != null) {
+                    DragInfo info = new DragInfo();
+                    info.origen = Origen.DESCARTE;
+                    info.col = -1;
+                    info.valor = cima.getValor();
+                    info.esTope = true;
+
+                    var arrastre = contDescarte.startDragAndDrop(javafx.scene.input.TransferMode.MOVE);
+                    var content = new javafx.scene.input.ClipboardContent();
+                    content.putString(encode(info));
+                    arrastre.setContent(content);
+
+                    // Usa la imagen del descarte como dragView
+                    javafx.scene.image.Image arrastreConImagen = contDescarte.snapshot(null, null);
+                    arrastre.setDragView(arrastreConImagen, arrastreConImagen.getWidth()/2, arrastreConImagen.getHeight()/2);
+                }
+            }
+            evento.consume();
+        });
+    }
+
+    private boolean puedeSoltarseEnTablero(DragInfo info, int destinoCol) {
+        var tabs = juego.getTableau();
+        if (tabs == null) return false;
+
+        DeckOfCards.CartaInglesa primera;
+        if (info.origen == Origen.TABLERO) {
+            var infoTablero = tabs.get(info.col);
+            primera = infoTablero.viewCardStartingAt(info.valor);
+            if (primera == null) return false;
+            if (info.col == destinoCol) return false;
+        } else {
+            var descarte = juego.getWastePile();
+            primera = (descarte != null) ? descarte.verCarta() : null;
+            if (primera == null) return false;
+        }
+
+        var finalComprobacion = tabs.get(destinoCol);
+        return finalComprobacion.sePuedeAgregarCarta(primera);
+    }
+
+    private boolean aplicarDropEnTablero(DragInfo info, int destinoCol) {
+        var tablero = juego.getTableau();
+        if (tablero == null) return false;
+
+        var comprobacion = tablero.get(destinoCol);
+
+        if (info.origen == Origen.TABLERO) {
+            var infoTablero = tablero.get(info.col);
+            DeckOfCards.CartaInglesa primera = infoTablero.viewCardStartingAt(info.valor);
+            if (primera == null) return false;
+            if (!comprobacion.sePuedeAgregarCarta(primera)) return false;
+            java.util.ArrayList<DeckOfCards.CartaInglesa> bloque = infoTablero.removeStartingAt(info.valor);
+            return comprobacion.agregarBloqueDeCartas(bloque);
+        } else {
+            var descarte = juego.getWastePile();
+            DeckOfCards.CartaInglesa carta = (descarte != null) ? descarte.verCarta() : null;
+            if (carta == null) return false;
+            if (!comprobacion.sePuedeAgregarCarta(carta)) return false;
+            carta = descarte.getCarta();
+            return comprobacion.agregarCarta(carta);
+        }
+    }
+
+    private boolean puedeSoltarseEnFoundation(DragInfo info, int idxBase) {
+        var bases = juego.getFoundation();
+        if (bases == null || idxBase >= bases.size()) return false;
+        var base = bases.get(idxBase);
+
+        DeckOfCards.CartaInglesa carta;
+        if (info.origen == Origen.TABLERO) {
+            if (!info.esTope) return false;
+            var tablero = juego.getTableau();
+            var tableroInfo = tablero.get(info.col);
+            carta = tableroInfo.getUltimaCarta();
+        } else {
+            var descarte = juego.getWastePile();
+            carta = (descarte != null) ? descarte.verCarta() : null;
+        }
+        if (carta == null) return false;
+
+        if (base.estaVacio()) {
+            return carta.getValorBajo() == 1;
+        } else {
+            DeckOfCards.CartaInglesa ultima = base.getUltimaCarta();
+            return (ultima.tieneElMismoPalo(carta.getPalo()) &&
+                    ultima.getValorBajo() + 1 == carta.getValorBajo());
+        }
+    }
+
+    private boolean aplicarDropEnFoundation(DragInfo info, int idxBase) {
+        var bases = juego.getFoundation();
+        if (bases == null || idxBase >= bases.size()) return false;
+        var base = bases.get(idxBase);
+
+        if (info.origen == Origen.TABLERO) {
+            if (!info.esTope) return false;
+            var tableroInfo = juego.getTableau().get(info.col);
+            DeckOfCards.CartaInglesa top = tableroInfo.getUltimaCarta();
+            if (top == null) return false;
+            if (base.agregarCarta(top)) {
+                tableroInfo.removerUltimaCarta();
+                return true;
+            }
+            return false;
+        } else {
+            var descarte = juego.getWastePile();
+            DeckOfCards.CartaInglesa top = (descarte != null) ? descarte.verCarta() : null;
+            if (top == null) return false;
+            if (base.agregarCarta(top)) {
+                descarte.getCarta();
+                return true;
+            }
+            return false;
+        }
+    }
+
 }
