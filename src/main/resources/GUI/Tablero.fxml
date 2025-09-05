@@ -15,23 +15,26 @@
 
             <top>
                 <HBox fx:id="barraSup" spacing="16" BorderPane.alignment="CENTER">
-                    <padding><Insets top="16" left="80" right="80" bottom="0"/></padding>
+                    <padding><Insets bottom="0" left="80" right="80" top="16" /></padding>
 
-                    <HBox spacing="16" alignment="CENTER_LEFT">
-                        <StackPane fx:id="contMazo"     prefWidth="150" prefHeight="200"/>
-                        <StackPane fx:id="contDescarte" prefWidth="150" prefHeight="200"/>
+                    <HBox alignment="CENTER_LEFT" spacing="16">
+                        <StackPane fx:id="contMazo" prefHeight="200" prefWidth="150" />
+                        <StackPane fx:id="contDescarte" prefHeight="200" prefWidth="150" />
                     </HBox>
 
                     <HBox fx:id="centro" alignment="CENTER" HBox.hgrow="ALWAYS">
-                        <Button fx:id="botonNuevo" text="Nuevo juego" onAction="#alDarNuevoJuego"/>
-                        <Button fx:id="botonMenu"  text="Menú"        onAction="#alDarMenu"/>
+                        <Button fx:id="botonNuevo" onAction="#alDarNuevoJuego" text="Nuevo juego" />
+                        <Button fx:id="botonMenu" onAction="#alDarMenu" text="Menú" />
                     </HBox>
 
-                    <HBox spacing="16" alignment="CENTER_RIGHT">
-                        <StackPane fx:id="bas1" prefWidth="150" prefHeight="200"/>
-                        <StackPane fx:id="bas2" prefWidth="150" prefHeight="200"/>
-                        <StackPane fx:id="bas3" prefWidth="150" prefHeight="200"/>
-                        <StackPane fx:id="bas4" prefWidth="150" prefHeight="200"/>
+                    <HBox alignment="CENTER_RIGHT" spacing="16">
+                        <StackPane fx:id="bas1" prefHeight="200" prefWidth="150">
+                     <children>
+                        <TextFlow id="asdasdasdasdas" prefHeight="200.0" prefWidth="200.0" />
+                     </children></StackPane>
+                        <StackPane fx:id="bas2" prefHeight="200" prefWidth="150" />
+                        <StackPane fx:id="bas3" prefHeight="200" prefWidth="150" />
+                        <StackPane fx:id="bas4" prefHeight="200" prefWidth="150" />
                     </HBox>
                 </HBox>
             </top>

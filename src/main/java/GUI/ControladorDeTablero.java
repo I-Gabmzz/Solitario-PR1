@@ -2,21 +2,27 @@ package GUI;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.scene.control.Button;
+import solitaire.FoundationDeck;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 
 public class ControladorDeTablero {
     private solitaire.SolitaireGame juego;
+    private Label[] marcadoresFundacion;
 
     @FXML private ImageView fondo;
     @FXML private javafx.scene.layout.HBox centro;
