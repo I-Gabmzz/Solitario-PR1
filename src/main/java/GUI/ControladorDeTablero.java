@@ -2,27 +2,26 @@ package GUI;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.scene.control.Button;
-import solitaire.FoundationDeck;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Objects;
+
+import static GUI.DragInfo.decode;
+import static GUI.DragInfo.encode;
 
 public class ControladorDeTablero {
     private solitaire.SolitaireGame juego;
-    private Label[] marcadoresFundacion;
+    private boolean juegoTerminadoMostrado = false;
+
 
     @FXML private ImageView fondo;
     @FXML private javafx.scene.layout.HBox centro;
@@ -47,9 +46,9 @@ public class ControladorDeTablero {
 
     private enum Origen { TABLERO, DESCARTE }
     private static final int MAX_CARTAS = 13;
-    private double pasoY = 40;
-    private double anchoCarta = 150;
-    private double altoCarta  = 200;
+    private int espacioY = 40;
+    private int anchoCarta = 150;
+    private int altoCarta  = 200;
 
     private static final String BOTONES_NORMALES =
             "-fx-background-color: rgba(255,255,255,0.85);" +
@@ -73,25 +72,6 @@ public class ControladorDeTablero {
                     "-fx-border-width: 2;" +
                     "-fx-background-radius: 12;" +
                     "-fx-border-radius: 12;";
-
-    private static final class DragInfo {
-        Origen origen;
-        int col;
-        int valor;
-        boolean esTope;
-    }
-    private static String encode(DragInfo d) {
-        return d.origen + ";" + d.col + ";" + d.valor + ";" + (d.esTope ? "1" : "0");
-    }
-    private static DragInfo decode(String s) {
-        String[] p = s.split(";");
-        DragInfo d = new DragInfo();
-        d.origen = Origen.valueOf(p[0]);
-        d.col = Integer.parseInt(p[1]);
-        d.valor = Integer.parseInt(p[2]);
-        d.esTope = "1".equals(p[3]);
-        return d;
-    }
 
     @FXML
     private void initialize() {
@@ -171,7 +151,6 @@ public class ControladorDeTablero {
         }
     }
 
-
     private void actualizarTablero(solitaire.SolitaireGame juego) {
         var tabs = juego.getTableau();
         if (tabs == null || tabs.size() < 7) return;
@@ -214,7 +193,6 @@ public class ControladorDeTablero {
         acomodarColumna(col7, MAX_CARTAS);
     }
 
-
     private void acomodarColumna(javafx.scene.layout.Pane col, int cuantosMax) {
         var hijos = col.getChildren();
         int espacio = 0;
@@ -223,14 +201,22 @@ public class ControladorDeTablero {
         for (var node : hijos) {
             node.setLayoutX(0);
             node.setLayoutY(espacio);
-            espacio += pasoY;
+            espacio += espacioY;
             activos++;
             if (activos >= cuantosMax) break;
         }
     }
 
-    public void alDarNuevoJuego(javafx.event.ActionEvent actionEvent) {
+    public void alDarNuevoJuego(javafx.event.ActionEvent actionEvent) throws IOException {
+        Parent raizTablero = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/GUI/Tablero.fxml")));
 
+        Stage ventanaActual = (Stage) botonNuevo.getScene().getWindow();
+
+        ventanaActual.setScene(new Scene(raizTablero, ventanaActual.getWidth(), ventanaActual.getHeight()));
+        ventanaActual.setMaximized(ventanaActual.isMaximized());
+        ventanaActual.setFullScreen(ventanaActual.isFullScreen());
+
+        ventanaActual.show();
     }
 
     public void alDarMenu(javafx.event.ActionEvent actionEvent) throws IOException {
@@ -284,7 +270,7 @@ public class ControladorDeTablero {
         });
     }
 
-    private void dibujarSlot(javafx.scene.layout.StackPane cont, double ancho, double alto) {
+    private void dibujarSlot(javafx.scene.layout.StackPane cont, int ancho, int alto) {
         cont.getChildren().clear();
         var espacioCarta = new javafx.scene.shape.Rectangle(ancho, alto);
         espacioCarta.setArcWidth(14); espacioCarta.setArcHeight(14);
@@ -294,7 +280,7 @@ public class ControladorDeTablero {
         cont.getChildren().add(espacioCarta);
     }
 
-    private void mostrarCubierta(javafx.scene.layout.StackPane cont, double ancho, double alto) {
+    private void mostrarCubierta(javafx.scene.layout.StackPane cont, int ancho, int alto) {
         cont.getChildren().clear();
         var url = getClass().getResource("/Cartas/Cubierta Carta.png");
         if (url == null) { dibujarSlot(cont, ancho, alto); return; }
@@ -304,7 +290,7 @@ public class ControladorDeTablero {
     }
 
     private void mostrarCarta(javafx.scene.layout.StackPane cont,
-                              DeckOfCards.CartaInglesa c, double ancho, double alto) {
+                              DeckOfCards.CartaInglesa c, int ancho, int alto) {
         cont.getChildren().clear();
         String tipo = tipoDesdePalo(c.getPalo());
         String nombre  = nombreDesdeValor(c.getValor());
@@ -472,7 +458,7 @@ public class ControladorDeTablero {
                     boolean esTope = (comprobacion == cartas.size() - 1);
 
                     DragInfo info = new DragInfo();
-                    info.origen = Origen.TABLERO;
+                    info.origen = GUI.DragInfo.Origen.TABLERO;
                     info.col    = colFinal;
                     info.valor  = carta.getValor();
                     info.esTope = esTope;
@@ -495,7 +481,7 @@ public class ControladorDeTablero {
                 DeckOfCards.CartaInglesa cima = juego.getWastePile().verCarta();
                 if (cima != null) {
                     DragInfo info = new DragInfo();
-                    info.origen = Origen.DESCARTE;
+                    info.origen = GUI.DragInfo.Origen.DESCARTE;
                     info.col = -1;
                     info.valor = cima.getValor();
                     info.esTope = true;
@@ -505,7 +491,6 @@ public class ControladorDeTablero {
                     content.putString(encode(info));
                     arrastre.setContent(content);
 
-                    // Usa la imagen del descarte como dragView
                     javafx.scene.image.Image arrastreConImagen = contDescarte.snapshot(null, null);
                     arrastre.setDragView(arrastreConImagen, arrastreConImagen.getWidth()/2, arrastreConImagen.getHeight()/2);
                 }
@@ -519,7 +504,7 @@ public class ControladorDeTablero {
         if (tabs == null) return false;
 
         DeckOfCards.CartaInglesa primera;
-        if (info.origen == Origen.TABLERO) {
+        if (info.origen == GUI.DragInfo.Origen.TABLERO) {
             var infoTablero = tabs.get(info.col);
             primera = infoTablero.viewCardStartingAt(info.valor);
             if (primera == null) return false;
@@ -540,7 +525,7 @@ public class ControladorDeTablero {
 
         var comprobacion = tablero.get(destinoCol);
 
-        if (info.origen == Origen.TABLERO) {
+        if (info.origen == GUI.DragInfo.Origen.TABLERO) {
             var infoTablero = tablero.get(info.col);
             DeckOfCards.CartaInglesa primera = infoTablero.viewCardStartingAt(info.valor);
             if (primera == null) return false;
@@ -557,13 +542,13 @@ public class ControladorDeTablero {
         }
     }
 
-    private boolean puedeSoltarseEnFoundation(DragInfo info, int idxBase) {
+    private boolean puedeSoltarseEnFoundation(DragInfo info, int destinoCol) {
         var bases = juego.getFoundation();
-        if (bases == null || idxBase >= bases.size()) return false;
-        var base = bases.get(idxBase);
+        if (bases == null || destinoCol >= bases.size()) return false;
+        var base = bases.get(destinoCol);
 
         DeckOfCards.CartaInglesa carta;
-        if (info.origen == Origen.TABLERO) {
+        if (info.origen == GUI.DragInfo.Origen.TABLERO) {
             if (!info.esTope) return false;
             var tablero = juego.getTableau();
             var tableroInfo = tablero.get(info.col);
@@ -583,18 +568,19 @@ public class ControladorDeTablero {
         }
     }
 
-    private boolean aplicarDropEnFoundation(DragInfo info, int idxBase) {
+    private boolean aplicarDropEnFoundation(DragInfo info, int destinoCol) {
         var bases = juego.getFoundation();
-        if (bases == null || idxBase >= bases.size()) return false;
-        var base = bases.get(idxBase);
+        if (bases == null || destinoCol >= bases.size()) return false;
+        var base = bases.get(destinoCol);
 
-        if (info.origen == Origen.TABLERO) {
+        if (info.origen == GUI.DragInfo.Origen.TABLERO) {
             if (!info.esTope) return false;
             var tableroInfo = juego.getTableau().get(info.col);
             DeckOfCards.CartaInglesa top = tableroInfo.getUltimaCarta();
             if (top == null) return false;
             if (base.agregarCarta(top)) {
                 tableroInfo.removerUltimaCarta();
+                verificarVictoria();
                 return true;
             }
             return false;
@@ -604,10 +590,35 @@ public class ControladorDeTablero {
             if (top == null) return false;
             if (base.agregarCarta(top)) {
                 descarte.getCarta();
+                verificarVictoria();
                 return true;
             }
             return false;
         }
+    }
+
+    private boolean yaSeGano() {
+        return juego != null && juego.isGameOver();
+    }
+
+    private void verificarVictoria() {
+        if (juegoTerminadoMostrado) return;
+        if (!yaSeGano()) return;
+
+        juegoTerminadoMostrado = true;
+
+        javafx.application.Platform.runLater(() -> {
+            var alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+            alert.setTitle("¡Victoria!");
+            alert.setHeaderText("Has ganado la partida");
+            alert.setContentText("Todas las cartas están en las bases.");
+            alert.showAndWait();
+            try {
+                alDarMenu(null);
+            } catch (java.io.IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
 }
