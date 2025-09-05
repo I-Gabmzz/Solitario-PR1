@@ -20,12 +20,6 @@ public class CartaView {
 
     private static final Image BASECARTA = new WritableImage(1, 1);
 
-    public String getTipo() { return tipo; }
-    public String getNombre() { return nombre; }
-    public boolean isBocaArriba() { return bocaArriba; }
-    public double getAncho() { return ancho; }
-    public double getAlto() { return alto; }
-
     @FXML
     private void initialize() {
         aplicarTamaño();
@@ -53,17 +47,6 @@ public class CartaView {
 
     public void establecerBocaArriba(boolean bocaArriba) {
         this.bocaArriba = bocaArriba;
-        refrescar();
-    }
-
-    public void establecerTamano(int ancho, int alto) {
-        this.ancho = ancho; this.alto = alto;
-        aplicarTamaño();
-        refrescar();
-    }
-
-    public void voltear() {
-        this.bocaArriba = !this.bocaArriba;
         refrescar();
     }
 
@@ -107,4 +90,38 @@ public class CartaView {
             default: return "As";
         }
     }
+
+    public void mostrarSlot(boolean on) {
+        if (on) {
+            imagen.setImage(null);
+            raiz.setStyle(
+                    "-fx-background-color: rgba(255,255,255,0.10);" +
+                            "-fx-border-color: white;" +
+                            "-fx-border-width: 2;" +
+                            "-fx-background-radius: 14;" +
+                            "-fx-border-radius: 14;"
+            );
+        } else {
+            raiz.setStyle("");
+            refrescar();
+        }
+    }
+
+    public void setVisible(boolean visible) {
+        raiz.setVisible(visible);
+        raiz.setManaged(visible);
+    }
+
+    public StackPane getRoot() {
+        return raiz;
+    }
+
+    public void setUserData(Object data) {
+        raiz.setUserData(data);
+    }
+
+    public Object getUserData() {
+        return raiz.getUserData();
+    }
+
 }
