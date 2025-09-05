@@ -10,6 +10,7 @@ module com.example.solitariogui_pr {
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
+    requires java.desktop;
 
     opens Ejecutable to javafx.fxml;
     exports Ejecutable;

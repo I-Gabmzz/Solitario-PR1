@@ -1,6 +1,8 @@
 package GUI;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.Label;
 
 import javafx.application.Platform;
@@ -8,10 +10,11 @@ import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
+
+import java.io.IOException;
 
 public class ControladorDeInterfazInicial {
     @FXML private ImageView fondo;
@@ -92,12 +95,16 @@ public class ControladorDeInterfazInicial {
     }
 
     @FXML
-    private void alDarJugar(ActionEvent e) {
-        Stage stage = (Stage) botonJugar.getScene().getWindow();
-        BorderPane placeholder = new BorderPane();
-        placeholder.setCenter(new Label("Tablero"));
-        stage.setScene(new Scene(placeholder, stage.getScene().getWidth(), stage.getScene().getHeight()));
-        stage.setTitle("Solitario | Tablero");
+    private void alDarJugar(ActionEvent e) throws IOException {
+        Parent raizTablero = FXMLLoader.load(getClass().getResource("/GUI/Tablero.fxml"));
+        Stage venActual  = (Stage) botonJugar.getScene().getWindow();
+        Stage venTablero = new Stage();
+        venTablero.setTitle("Solitario – Tablero");
+        venTablero.setScene(new Scene(raizTablero, venActual.getWidth(), venActual.getHeight()));
+        venTablero.setMaximized(venActual.isMaximized());
+        venTablero.setFullScreen(venActual.isFullScreen());
+        venActual.close();
+        venTablero.show();
     }
 
     @FXML

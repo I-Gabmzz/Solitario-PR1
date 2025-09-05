@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.ControladorDeTablero">
+
+    <children>
+        <ImageView fx:id="fondo" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+
+        <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+
+            <top>
+                <HBox fx:id="barraSup" spacing="16" BorderPane.alignment="CENTER">
+                    <padding><Insets top="16" left="80" right="80" bottom="0"/></padding>
+
+                    <HBox spacing="16" alignment="CENTER_LEFT">
+                        <StackPane fx:id="contMazo"     prefWidth="150" prefHeight="200"/>
+                        <StackPane fx:id="contDescarte" prefWidth="150" prefHeight="200"/>
+                    </HBox>
+
+                    <HBox fx:id="centro" alignment="CENTER" HBox.hgrow="ALWAYS">
+                        <Button fx:id="botonNuevo" text="Nuevo juego" onAction="#alDarNuevoJuego"/>
+                        <Button fx:id="botonMenu"  text="Menú"        onAction="#alDarMenu"/>
+                    </HBox>
+
+                    <HBox spacing="16" alignment="CENTER_RIGHT">
+                        <StackPane fx:id="bas1" prefWidth="150" prefHeight="200"/>
+                        <StackPane fx:id="bas2" prefWidth="150" prefHeight="200"/>
+                        <StackPane fx:id="bas3" prefWidth="150" prefHeight="200"/>
+                        <StackPane fx:id="bas4" prefWidth="150" prefHeight="200"/>
+                    </HBox>
+                </HBox>
+            </top>
+
+            <center>
+                <GridPane hgap="16" translateX="12" translateY="8" vgap="0" BorderPane.alignment="CENTER">
+                    <padding><Insets bottom="24" left="65" right="0" top="85" /></padding>
+
+                    <columnConstraints>
+                        <ColumnConstraints percentWidth="14" />
+                        <ColumnConstraints percentWidth="14" />
+                        <ColumnConstraints percentWidth="14" />
+                        <ColumnConstraints percentWidth="14" />
+                        <ColumnConstraints percentWidth="14" />
+                        <ColumnConstraints percentWidth="14" />
+                        <ColumnConstraints percentWidth="14" />
+                    </columnConstraints>
+
+                    <Pane fx:id="col1" GridPane.columnIndex="0">
+                        <children>
+                            <fx:include fx:id="col1c1" source="CartaView.fxml" />
+                        </children>
+                    </Pane>
+
+                    <Pane fx:id="col2" GridPane.columnIndex="1">
+                        <children>
+                            <fx:include fx:id="col2c1" source="CartaView.fxml" />
+                            <fx:include fx:id="col2c2" source="CartaView.fxml" />
+                        </children>
+                    </Pane>
+
+                    <Pane fx:id="col3" GridPane.columnIndex="2">
+                        <children>
+                            <fx:include fx:id="col3c1" source="CartaView.fxml" />
+                            <fx:include fx:id="col3c2" source="CartaView.fxml" />
+                            <fx:include fx:id="col3c3" source="CartaView.fxml" />
+                        </children>
+                    </Pane>
+
+                    <Pane fx:id="col4" GridPane.columnIndex="3">
+                        <children>
+                            <fx:include fx:id="col4c1" source="CartaView.fxml" />
+                            <fx:include fx:id="col4c2" source="CartaView.fxml" />
+                            <fx:include fx:id="col4c3" source="CartaView.fxml" />
+                            <fx:include fx:id="col4c4" source="CartaView.fxml" />
+                        </children>
+                    </Pane>
+
+                    <Pane fx:id="col5" GridPane.columnIndex="4">
+                        <children>
+                            <fx:include fx:id="col5c1" source="CartaView.fxml" />
+                            <fx:include fx:id="col5c2" source="CartaView.fxml" />
+                            <fx:include fx:id="col5c3" source="CartaView.fxml" />
+                            <fx:include fx:id="col5c4" source="CartaView.fxml" />
+                            <fx:include fx:id="col5c5" source="CartaView.fxml" />
+                        </children>
+                    </Pane>
+
+                    <Pane fx:id="col6" GridPane.columnIndex="5">
+                        <children>
+                            <fx:include fx:id="col6c1" source="CartaView.fxml" />
+                            <fx:include fx:id="col6c2" source="CartaView.fxml" />
+                            <fx:include fx:id="col6c3" source="CartaView.fxml" />
+                            <fx:include fx:id="col6c4" source="CartaView.fxml" />
+                            <fx:include fx:id="col6c5" source="CartaView.fxml" />
+                            <fx:include fx:id="col6c6" source="CartaView.fxml" />
+                        </children>
+                    </Pane>
+
+                    <Pane fx:id="col7" GridPane.columnIndex="6">
+                        <children>
+                            <fx:include fx:id="col7c1" source="CartaView.fxml" />
+                            <fx:include fx:id="col7c2" source="CartaView.fxml" />
+                            <fx:include fx:id="col7c3" source="CartaView.fxml" />
+                            <fx:include fx:id="col7c4" source="CartaView.fxml" />
+                            <fx:include fx:id="col7c5" source="CartaView.fxml" />
+                            <fx:include fx:id="col7c6" source="CartaView.fxml" />
+                            <fx:include fx:id="col7c7" source="CartaView.fxml" />
+                        </children>
+                    </Pane>
+               <rowConstraints>
+                  <RowConstraints />
+               </rowConstraints>
+                </GridPane>
+            </center>
+        </BorderPane>
+    </children>
+</AnchorPane>

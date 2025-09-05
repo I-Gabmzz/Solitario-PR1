@@ -6,10 +6,10 @@
            xmlns:fx="http://javafx.com/fxml"
            fx:controller="GUI.CartaView"
            fx:id="raiz"
-           prefWidth="140" prefHeight="196">
+           prefWidth="150" prefHeight="200">
     <children>
         <ImageView fx:id="imagen"
-                   fitWidth="140" fitHeight="196"
+                   fitWidth="150" fitHeight="200"
                    preserveRatio="false"
                    pickOnBounds="true"/>
     </children>

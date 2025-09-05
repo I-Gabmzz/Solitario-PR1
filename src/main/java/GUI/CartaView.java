@@ -32,10 +32,10 @@ public class CartaView {
 
         DropShadow normal = new DropShadow();
         normal.setRadius(10); normal.setOffsetY(3);
-        normal.setColor(Color.rgb(0,0,0,64));
+        normal.setColor(Color.rgb(0,0,0,0.5));
         DropShadow hover = new DropShadow();
         hover.setRadius(16); hover.setOffsetY(6);
-        hover.setColor(Color.rgb(0,0,0,115));
+        hover.setColor(Color.rgb(0,0,0,1));
 
         raiz.setEffect(normal);
         raiz.setOnMouseEntered(e -> { raiz.setEffect(hover); raiz.setCursor(javafx.scene.Cursor.HAND); });
