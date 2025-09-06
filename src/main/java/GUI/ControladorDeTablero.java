@@ -11,45 +11,64 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.scene.control.Button;
-
 import java.io.IOException;
 import java.util.Objects;
-
 import static GUI.DragInfo.decode;
 import static GUI.DragInfo.encode;
 
+// Se declara la creacion de la clase controla el tablero de juego: columnas, bases, mazo y descarte
 public class ControladorDeTablero {
-    private solitaire.SolitaireGame juego;
-    private boolean juegoTerminadoMostrado = false;
 
+    private solitaire.SolitaireGame juego; // Como atributo tiene al juego logíco
+    private boolean juegoTerminadoMostrado = false; // Atributo que indíca el estado del juego
 
-    @FXML private ImageView fondo;
-    @FXML private javafx.scene.layout.HBox centro;
-    @FXML private javafx.scene.layout.StackPane contMazo;
-    @FXML private javafx.scene.layout.StackPane contDescarte;
-    @FXML private javafx.scene.layout.StackPane bas1, bas2, bas3, bas4;
-    @FXML private Pane col1, col2, col3, col4, col5, col6, col7;
+    // Elementos de la interfaz
+    @FXML
+    private ImageView fondo;
+    @FXML
+    private javafx.scene.layout.HBox centro;
+    @FXML
+    private javafx.scene.layout.StackPane contMazo;
+    @FXML
+    private javafx.scene.layout.StackPane contDescarte;
+    @FXML
+    private javafx.scene.layout.StackPane bas1, bas2, bas3, bas4;
+    @FXML
+    private Pane col1, col2, col3, col4, col5, col6, col7;
+    @FXML
+    private Button botonNuevo;
+    @FXML
+    private Button botonMenu;
 
-    @FXML private Button botonNuevo;
-    @FXML private Button botonMenu;
+    // Controladores de las cartas en las columnas (slots visibles)
+    @FXML
+    private GUI.CartaView col1c1Controller;
+    @FXML
+    private GUI.CartaView col2c1Controller, col2c2Controller;
+    @FXML
+    private GUI.CartaView col3c1Controller, col3c2Controller, col3c3Controller;
+    @FXML
+    private GUI.CartaView col4c1Controller, col4c2Controller, col4c3Controller, col4c4Controller;
+    @FXML
+    private GUI.CartaView col5c1Controller, col5c2Controller, col5c3Controller, col5c4Controller, col5c5Controller;
+    @FXML
+    private GUI.CartaView col6c1Controller, col6c2Controller, col6c3Controller, col6c4Controller, col6c5Controller, col6c6Controller;
+    @FXML
+    private GUI.CartaView col7c1Controller, col7c2Controller, col7c3Controller, col7c4Controller, col7c5Controller, col7c6Controller, col7c7Controller;
 
-    @FXML private GUI.CartaView col1c1Controller;
-    @FXML private GUI.CartaView col2c1Controller, col2c2Controller;
-    @FXML private GUI.CartaView col3c1Controller, col3c2Controller, col3c3Controller;
-    @FXML private GUI.CartaView col4c1Controller, col4c2Controller, col4c3Controller, col4c4Controller;
-    @FXML private GUI.CartaView col5c1Controller, col5c2Controller, col5c3Controller, col5c4Controller, col5c5Controller;
-    @FXML private GUI.CartaView col6c1Controller, col6c2Controller, col6c3Controller, col6c4Controller, col6c5Controller, col6c6Controller;
-    @FXML private GUI.CartaView col7c1Controller, col7c2Controller, col7c3Controller, col7c4Controller, col7c5Controller, col7c6Controller, col7c7Controller;
+    // Listas para el manejo de las columnas
     private java.util.List<javafx.scene.layout.Pane> columnasPanes;
     private java.util.List<java.util.List<GUI.CartaView>> vistasColumnas;
 
 
-    private enum Origen { TABLERO, DESCARTE }
-    private static final int MAX_CARTAS = 13;
-    private int espacioY = 40;
-    private int anchoCarta = 150;
-    private int altoCarta  = 200;
+    private enum Origen {TABLERO, DESCARTE} // Atributo para el arrastre
 
+    private static final int MAX_CARTAS = 13; // El numero maximo de cartas por columna
+    private int espacioY = 40; // Espacio entre cada carta verticalmente
+    private int anchoCarta = 150;
+    private int altoCarta = 200;
+
+    // Estilos de los botones (normal, hover y presionado)
     private static final String BOTONES_NORMALES =
             "-fx-background-color: rgba(255,255,255,0.85);" +
                     "-fx-border-color: #d32f2f;" +
@@ -73,6 +92,7 @@ public class ControladorDeTablero {
                     "-fx-background-radius: 12;" +
                     "-fx-border-radius: 12;";
 
+    // Se ejecuta al iniciar el tablero, basicamente crea el juego, prepara el fondo, botones, columnas y arranca la partida
     @FXML
     private void initialize() {
         juego = new solitaire.SolitaireGame();
@@ -100,17 +120,38 @@ public class ControladorDeTablero {
         java.util.List<GUI.CartaView> c1 = new java.util.ArrayList<>();
         c1.add(col1c1Controller);
         java.util.List<GUI.CartaView> c2 = new java.util.ArrayList<>();
-        c2.add(col2c1Controller); c2.add(col2c2Controller);
+        c2.add(col2c1Controller);
+        c2.add(col2c2Controller);
         java.util.List<GUI.CartaView> c3 = new java.util.ArrayList<>();
-        c3.add(col3c1Controller); c3.add(col3c2Controller); c3.add(col3c3Controller);
+        c3.add(col3c1Controller);
+        c3.add(col3c2Controller);
+        c3.add(col3c3Controller);
         java.util.List<GUI.CartaView> c4 = new java.util.ArrayList<>();
-        c4.add(col4c1Controller); c4.add(col4c2Controller); c4.add(col4c3Controller); c4.add(col4c4Controller);
+        c4.add(col4c1Controller);
+        c4.add(col4c2Controller);
+        c4.add(col4c3Controller);
+        c4.add(col4c4Controller);
         java.util.List<GUI.CartaView> c5 = new java.util.ArrayList<>();
-        c5.add(col5c1Controller); c5.add(col5c2Controller); c5.add(col5c3Controller); c5.add(col5c4Controller); c5.add(col5c5Controller);
+        c5.add(col5c1Controller);
+        c5.add(col5c2Controller);
+        c5.add(col5c3Controller);
+        c5.add(col5c4Controller);
+        c5.add(col5c5Controller);
         java.util.List<GUI.CartaView> c6 = new java.util.ArrayList<>();
-        c6.add(col6c1Controller); c6.add(col6c2Controller); c6.add(col6c3Controller); c6.add(col6c4Controller); c6.add(col6c5Controller); c6.add(col6c6Controller);
+        c6.add(col6c1Controller);
+        c6.add(col6c2Controller);
+        c6.add(col6c3Controller);
+        c6.add(col6c4Controller);
+        c6.add(col6c5Controller);
+        c6.add(col6c6Controller);
         java.util.List<GUI.CartaView> c7 = new java.util.ArrayList<>();
-        c7.add(col7c1Controller); c7.add(col7c2Controller); c7.add(col7c3Controller); c7.add(col7c4Controller); c7.add(col7c5Controller); c7.add(col7c6Controller); c7.add(col7c7Controller);
+        c7.add(col7c1Controller);
+        c7.add(col7c2Controller);
+        c7.add(col7c3Controller);
+        c7.add(col7c4Controller);
+        c7.add(col7c5Controller);
+        c7.add(col7c6Controller);
+        c7.add(col7c7Controller);
 
         java.util.function.Function<java.util.List<GUI.CartaView>, java.util.List<GUI.CartaView>> limpia = lista -> {
             lista.removeIf(java.util.Objects::isNull);
@@ -131,6 +172,7 @@ public class ControladorDeTablero {
         actualizarTablero(juego);
     }
 
+    // Metodo que crea mas slots en un contenedor hasta llegar a la cantidad pedida
     private void asegurarSlots(javafx.scene.layout.Pane contenedor,
                                java.util.List<GUI.CartaView> lista, int requeridos) {
         while (lista.size() < requeridos) {
@@ -151,6 +193,7 @@ public class ControladorDeTablero {
         }
     }
 
+    // Refresca todas las columnas mostrando las cartas correctas o slots vacíos
     private void actualizarTablero(solitaire.SolitaireGame juego) {
         var tabs = juego.getTableau();
         if (tabs == null || tabs.size() < 7) return;
@@ -165,7 +208,7 @@ public class ControladorDeTablero {
             int n = cartas.size();
             int mostrar = Math.min(MAX_CARTAS, n);
             int start = Math.max(0, n - MAX_CARTAS);
-
+            // Asigna las cartas visibles
             for (int j = 0; j < mostrar; j++) {
                 var carta = cartas.get(start + j);
                 var cartaView = vistas.get(j);
@@ -176,14 +219,14 @@ public class ControladorDeTablero {
                 cartaView.mostrarSlot(false);
                 cartaView.setVisible(true);
             }
-
+            // Rellena el resto con slots
             for (int j = mostrar; j < MAX_CARTAS; j++) {
                 var cv = vistas.get(j);
                 cv.mostrarSlot(true);
                 cv.setVisible(false);
             }
         }
-
+        // Ajusta la posición vertical en cada columna
         acomodarColumna(col1, MAX_CARTAS);
         acomodarColumna(col2, MAX_CARTAS);
         acomodarColumna(col3, MAX_CARTAS);
@@ -193,6 +236,7 @@ public class ControladorDeTablero {
         acomodarColumna(col7, MAX_CARTAS);
     }
 
+    // Este metodo tiene como utilidad el ordenar las cartas en una columna dándoles separación vertical
     private void acomodarColumna(javafx.scene.layout.Pane col, int cuantosMax) {
         var hijos = col.getChildren();
         int espacio = 0;
@@ -207,6 +251,7 @@ public class ControladorDeTablero {
         }
     }
 
+    // Reinicia el tablero cargando de nuevo la escena
     public void alDarNuevoJuego(javafx.event.ActionEvent actionEvent) throws IOException {
         Parent raizTablero = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/GUI/Tablero.fxml")));
 
@@ -219,6 +264,7 @@ public class ControladorDeTablero {
         ventanaActual.show();
     }
 
+    // Vuelve al menú principal cerrando el tablero
     public void alDarMenu(javafx.event.ActionEvent actionEvent) throws IOException {
         Parent raizMenu = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/GUI/InterfazInicial.fxml")));
         Stage ventanaTablero = (Stage) botonMenu.getScene().getWindow();
@@ -232,6 +278,7 @@ public class ControladorDeTablero {
         vetananMenu.show();
     }
 
+    // Estilo y comportamiento visual de los botones
     private void darEstiloAlBoton(Button boton) {
         DropShadow normal = new DropShadow();
         normal.setRadius(12);
@@ -270,38 +317,53 @@ public class ControladorDeTablero {
         });
     }
 
+    // Dibuja un rectangulo vacío para representar un slot libre
     private void dibujarSlot(javafx.scene.layout.StackPane cont, int ancho, int alto) {
         cont.getChildren().clear();
         var espacioCarta = new javafx.scene.shape.Rectangle(ancho, alto);
-        espacioCarta.setArcWidth(14); espacioCarta.setArcHeight(14);
-        espacioCarta.setFill(javafx.scene.paint.Color.color(1,1,1, 0.10));
+        espacioCarta.setArcWidth(14);
+        espacioCarta.setArcHeight(14);
+        espacioCarta.setFill(javafx.scene.paint.Color.color(1, 1, 1, 0.10));
         espacioCarta.setStroke(javafx.scene.paint.Color.WHITE);
         espacioCarta.setStrokeWidth(2);
         cont.getChildren().add(espacioCarta);
     }
 
+    // Muestra la imagen de la cubierta en un contenedor
     private void mostrarCubierta(javafx.scene.layout.StackPane cont, int ancho, int alto) {
         cont.getChildren().clear();
         var url = getClass().getResource("/Cartas/Cubierta Carta.png");
-        if (url == null) { dibujarSlot(cont, ancho, alto); return; }
+        if (url == null) {
+            dibujarSlot(cont, ancho, alto);
+            return;
+        }
         var imageView = new javafx.scene.image.ImageView(new javafx.scene.image.Image(url.toExternalForm()));
-        imageView.setFitWidth(ancho); imageView.setFitHeight(alto); imageView.setPreserveRatio(false);
+        imageView.setFitWidth(ancho);
+        imageView.setFitHeight(alto);
+        imageView.setPreserveRatio(false);
         cont.getChildren().add(imageView);
     }
 
+    // Muestra una carta específica en un contenedor
     private void mostrarCarta(javafx.scene.layout.StackPane cont,
                               DeckOfCards.CartaInglesa c, int ancho, int alto) {
         cont.getChildren().clear();
         String tipo = tipoDesdePalo(c.getPalo());
-        String nombre  = nombreDesdeValor(c.getValor());
+        String nombre = nombreDesdeValor(c.getValor());
         String ruta = "/Cartas/" + tipo + "/" + nombre + ".png";
         var url = getClass().getResource(ruta);
-        if (url == null) { dibujarSlot(cont, ancho, alto); return; }
+        if (url == null) {
+            dibujarSlot(cont, ancho, alto);
+            return;
+        }
         var iv = new javafx.scene.image.ImageView(new javafx.scene.image.Image(url.toExternalForm()));
-        iv.setFitWidth(ancho); iv.setFitHeight(alto); iv.setPreserveRatio(false);
+        iv.setFitWidth(ancho);
+        iv.setFitHeight(alto);
+        iv.setPreserveRatio(false);
         cont.getChildren().add(iv);
     }
 
+    // Actualiza de forma grafica la parte superior mazo, descarte y bases
     private void actualizarZonaSuperior(solitaire.SolitaireGame juego) {
         if (juego.getDrawPile() != null && juego.getDrawPile().hayCartas()) {
             mostrarCubierta(contMazo, anchoCarta, altoCarta);
@@ -317,7 +379,7 @@ public class ControladorDeTablero {
         }
 
         var foundation = juego.getFoundation();
-        var bases = new javafx.scene.layout.StackPane[]{ bas1, bas2, bas3, bas4 };
+        var bases = new javafx.scene.layout.StackPane[]{bas1, bas2, bas3, bas4};
         for (int i = 0; i < bases.length; i++) {
             var base = bases[i];
             DeckOfCards.CartaInglesa top = (foundation != null && i < foundation.size() && foundation.get(i) != null)
@@ -330,38 +392,62 @@ public class ControladorDeTablero {
         }
     }
 
+    // Metodos que traducen palo y valor a sus nombres de imagen
     private String tipoDesdePalo(DeckOfCards.Palo p) {
         if (p == null) return "Pica";
         switch (p) {
-            case PICA:     return "Pica";
-            case CORAZON:  return "Corazon";
-            case DIAMANTE: return "Diamante";
-            case TREBOL:   return "Trebol";
-            default:       return "Pica";
+            case PICA:
+                return "Pica";
+            case CORAZON:
+                return "Corazon";
+            case DIAMANTE:
+                return "Diamante";
+            case TREBOL:
+                return "Trebol";
+            default:
+                return "Pica";
         }
     }
 
     private String nombreDesdeValor(int n) {
         switch (n) {
-            case 1:  return "As";
-            case 2:  return "Dos";
-            case 3:  return "Tres";
-            case 4:  return "Cuatro";
-            case 5:  return "Cinco";
-            case 6:  return "Seis";
-            case 7:  return "Siete";
-            case 8:  return "Ocho";
-            case 9:  return "Nueve";
-            case 10: return "Diez";
-            case 11: return "Joto";
-            case 12: return "Queen";
-            case 13: return "King";
-            case 14: return "As";
-            default: return "As";
+            case 1:
+                return "As";
+            case 2:
+                return "Dos";
+            case 3:
+                return "Tres";
+            case 4:
+                return "Cuatro";
+            case 5:
+                return "Cinco";
+            case 6:
+                return "Seis";
+            case 7:
+                return "Siete";
+            case 8:
+                return "Ocho";
+            case 9:
+                return "Nueve";
+            case 10:
+                return "Diez";
+            case 11:
+                return "Joto";
+            case 12:
+                return "Queen";
+            case 13:
+                return "King";
+            case 14:
+                return "As";
+            default:
+                return "As";
         }
     }
 
+    // Este metodo es algo complejo, debido a que es el que se encarga de configurar las interacciones como el:
+    // clic en mazo, el arrastre a columnas y bases, y arrastre desde descarte.
     private void configurarInteracciones() {
+        // Clic en el mazo: roba cartas o recarga si ya no hay
         contMazo.setOnMouseClicked(e -> {
             if (juego.getDrawPile() != null && juego.getDrawPile().hayCartas()) {
                 juego.drawCards();
@@ -370,6 +456,8 @@ public class ControladorDeTablero {
             }
             actualizarZonaSuperior(juego);
         });
+
+        // Drop en columnas del tablero
         Pane[] columnas = new Pane[]{ col1, col2, col3, col4, col5, col6, col7 };
         for (int i = 0; i < columnas.length; i++) {
             final int destinoCol = i;
@@ -395,12 +483,12 @@ public class ControladorDeTablero {
                 }
                 evento.setDropCompleted(ok);
                 evento.consume();
-
                 actualizarZonaSuperior(juego);
                 actualizarTablero(juego);
             });
         }
 
+        // Drop en bases (foundations)
         javafx.scene.layout.StackPane[] bases = new javafx.scene.layout.StackPane[]{ bas1, bas2, bas3, bas4 };
         for (int i = 0; i < bases.length; i++) {
             final int Baseref = i;
@@ -431,6 +519,7 @@ public class ControladorDeTablero {
             });
         }
 
+        // Drag desde cada CartaView dentro de las columnas
         for (int col = 0; col < vistasColumnas.size(); col++) {
             var lista = vistasColumnas.get(col);
             for (int slot = 0; slot < lista.size(); slot++) {
@@ -445,15 +534,13 @@ public class ControladorDeTablero {
                     if (tablero == null || colFinal >= tablero.size()) return;
 
                     var cartas = tablero.get(colFinal).getCards();
-
                     int mostrar = Math.min(lista.size(), cartas.size());
                     int start   = cartas.size() - mostrar;
-
                     if (slotFinal >= mostrar) return;
 
                     int comprobacion = start + slotFinal;
                     DeckOfCards.CartaInglesa carta = cartas.get(comprobacion);
-                    if (!carta.isFaceup()) return;
+                    if (!carta.isFaceup()) return; // No permite arrastrar si está boca abajo
 
                     boolean esTope = (comprobacion == cartas.size() - 1);
 
@@ -468,6 +555,7 @@ public class ControladorDeTablero {
                     content.putString(encode(info));
                     arrastre.setContent(content);
 
+                    // Usa un snapshot como vista de arrastre
                     var img = cartaView.getRoot().snapshot(null, null);
                     arrastre.setDragView(img, img.getWidth()/2, img.getHeight()/2);
 
@@ -476,6 +564,7 @@ public class ControladorDeTablero {
             }
         }
 
+        // Drag desde el descarte (waste)
         contDescarte.setOnDragDetected(evento -> {
             if (juego.getWastePile() != null && juego.getWastePile().hayCartas()) {
                 DeckOfCards.CartaInglesa cima = juego.getWastePile().verCarta();
@@ -491,14 +580,16 @@ public class ControladorDeTablero {
                     content.putString(encode(info));
                     arrastre.setContent(content);
 
-                    javafx.scene.image.Image arrastreConImagen = contDescarte.snapshot(null, null);
-                    arrastre.setDragView(arrastreConImagen, arrastreConImagen.getWidth()/2, arrastreConImagen.getHeight()/2);
+                    // Imagen de arrastre tomada del nodo del descarte
+                    javafx.scene.image.Image img = contDescarte.snapshot(null, null);
+                    arrastre.setDragView(img, img.getWidth()/2, img.getHeight()/2);
                 }
             }
             evento.consume();
         });
     }
 
+    // Valida si una carta puede soltarse en una columna
     private boolean puedeSoltarseEnTablero(DragInfo info, int destinoCol) {
         var tabs = juego.getTableau();
         if (tabs == null) return false;
@@ -519,6 +610,7 @@ public class ControladorDeTablero {
         return finalComprobacion.sePuedeAgregarCarta(primera);
     }
 
+    // Aplica el movimiento de una carta o bloque en el tablero
     private boolean aplicarDropEnTablero(DragInfo info, int destinoCol) {
         var tablero = juego.getTableau();
         if (tablero == null) return false;
@@ -542,6 +634,7 @@ public class ControladorDeTablero {
         }
     }
 
+    // Valida si una carta puede soltarse en una base
     private boolean puedeSoltarseEnFoundation(DragInfo info, int destinoCol) {
         var bases = juego.getFoundation();
         if (bases == null || destinoCol >= bases.size()) return false;
@@ -568,6 +661,7 @@ public class ControladorDeTablero {
         }
     }
 
+    // Aplica el movimiento de una carta en la base y verifica victoria
     private boolean aplicarDropEnFoundation(DragInfo info, int destinoCol) {
         var bases = juego.getFoundation();
         if (bases == null || destinoCol >= bases.size()) return false;
@@ -597,10 +691,12 @@ public class ControladorDeTablero {
         }
     }
 
+    // Metodo que permite conocer si ya se cumplio la condicion de victoria
     private boolean yaSeGano() {
         return juego != null && juego.isGameOver();
     }
 
+    // Metodo que lanza un mensaje de victoria y devuelve al menú
     private void verificarVictoria() {
         if (juegoTerminadoMostrado) return;
         if (!yaSeGano()) return;

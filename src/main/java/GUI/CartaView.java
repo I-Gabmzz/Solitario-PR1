@@ -1,5 +1,6 @@
 package GUI;
 
+// Librerías necesarias para la clase
 import java.net.URL;
 import javafx.fxml.FXML;
 import javafx.scene.effect.DropShadow;
@@ -9,17 +10,21 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 
+// Se declara la clase CartaView que representa visualmente una carta
 public class CartaView {
-    @FXML private StackPane raiz;
-    @FXML private ImageView imagen;
 
-    private String tipo;
-    private String nombre;
-    private boolean bocaArriba = false;
-    private int ancho = 150, alto = 200;
+    // Se declaran los atributos pertenecientes a la clase
+    @FXML private StackPane raiz; // Contenedor principal de la carta
+    @FXML private ImageView imagen; // Imagen que muestra la carta
 
-    private static final Image BASECARTA = new WritableImage(1, 1);
+    private String tipo; // Palo de la carta
+    private String nombre; // Valor de la carta
+    private boolean bocaArriba = false; // Indica si la carta está visible
+    private int ancho = 150, alto = 200; // Dimensiones de la carta
 
+    private static final Image BASECARTA = new WritableImage(1, 1); // Imagen base vacía
+
+    // Inicializa la carta aplicando tamaño, sombras y preparando la imagen inicial
     @FXML
     private void initialize() {
         aplicarTamaño();
@@ -38,6 +43,7 @@ public class CartaView {
         refrescar();
     }
 
+    // Asigna un número y tipo a la carta, la voltea boca arriba y actualiza la imagen
     public void establecerPorNumero(int numero, String tipo) {
         this.tipo = tipo;
         this.nombre = nombreDesdeNumero(numero);
@@ -45,11 +51,13 @@ public class CartaView {
         refrescar();
     }
 
+    // Voltea la carta según el valor recibido (mostrar cara o cubierta)
     public void establecerBocaArriba(boolean bocaArriba) {
         this.bocaArriba = bocaArriba;
         refrescar();
     }
 
+    // Ajusta el tamaño de la carta y de su contenedor
     private void aplicarTamaño() {
         imagen.setFitWidth(ancho);
         imagen.setFitHeight(alto);
@@ -58,6 +66,7 @@ public class CartaView {
         raiz.setMaxSize(ancho, alto);
     }
 
+    // Actualiza la carta: si está volteada muestra la cubierta, si no, la imagen real
     private void refrescar() {
         if (!bocaArriba || tipo == null || nombre == null) {
             imagen.setImage(cargar("/Cartas/Cubierta Carta.png"));
@@ -67,11 +76,13 @@ public class CartaView {
         imagen.setImage(cargar(ruta));
     }
 
+    // Carga una imagen desde la ruta indicada
     private Image cargar(String ruta) {
         URL url = getClass().getResource(ruta);
         return (url == null) ? BASECARTA : new Image(url.toExternalForm());
     }
 
+    // Traduce un número al nombre de la carta correspondiente
     private String nombreDesdeNumero(int n) {
         switch (n) {
             case 1:  return "As";
@@ -91,6 +102,7 @@ public class CartaView {
         }
     }
 
+    // Muestra un slot vacío con borde o restaura la carta normal
     public void mostrarSlot(boolean on) {
         if (on) {
             imagen.setImage(null);
@@ -107,11 +119,13 @@ public class CartaView {
         }
     }
 
+    // Controla la visibilidad de la carta en la interfaz
     public void setVisible(boolean visible) {
         raiz.setVisible(visible);
         raiz.setManaged(visible);
     }
 
+    // Devuelve el contenedor raíz de la carta para integrarlo en otros layouts
     public StackPane getRoot() {
         return raiz;
     }

@@ -3,7 +3,6 @@ package GUI;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
@@ -12,13 +11,15 @@ import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
-
 import java.io.IOException;
 
+// Se anuncia la creacion de la clase que maneja la pantalla inicial de la aplicacion
 public class ControladorDeInterfazInicial {
-    @FXML private ImageView fondo;
-    @FXML private Button botonJugar, botonCreditos, botonSalir;
+    // Se declaran los atributos de la clase
+    @FXML private ImageView fondo; // Imagen de fondo de la interfaz
+    @FXML private Button botonJugar, botonCreditos, botonSalir; // Botones principales
 
+    // Estilos para los botones en estado normal, con hover y presionados
     private static final String BOTONES_NORMALES =
             "-fx-background-color: rgba(255,255,255,0.85);" +
                     "-fx-border-color: #d32f2f;" +
@@ -42,6 +43,7 @@ public class ControladorDeInterfazInicial {
                     "-fx-background-radius: 12;" +
                     "-fx-border-radius: 12;";
 
+    // Este metodo simplemente le da estilo a un botón y configura sus efectos visuales de hover y clic
     private void darEstiloAlBoton(Button boton) {
         DropShadow normal = new DropShadow();
         normal.setRadius(12);
@@ -80,6 +82,7 @@ public class ControladorDeInterfazInicial {
         });
     }
 
+    // Este metodo inicializador lo que hace es ajustar el fondo al tamaño de la ventana y aplica estilos a los botones
     @FXML
     private void initialize() {
         fondo.sceneProperty().addListener((obs, oldScene, scene) -> {
@@ -93,6 +96,7 @@ public class ControladorDeInterfazInicial {
         darEstiloAlBoton(botonSalir);
     }
 
+    // Abre la ventana del tablero al presionar "Jugar"
     @FXML
     private void alDarJugar(ActionEvent e) throws IOException {
         Parent raizTablero = FXMLLoader.load(getClass().getResource("/GUI/Tablero.fxml"));
@@ -106,6 +110,7 @@ public class ControladorDeInterfazInicial {
         venTablero.show();
     }
 
+    // Este metodo muestra una ventana emergente con los créditos del juego
     @FXML
     private void alDarCreditos(javafx.event.ActionEvent e) {
         var stage = (javafx.stage.Stage) botonCreditos.getScene().getWindow();
@@ -119,9 +124,10 @@ public class ControladorDeInterfazInicial {
                 "Matricula: 1197503 \n" +
                 "Materia: Algoritmos y Estructuras de datos \n" +
                 "Versión: 5 de septiembre de 2025");
-        alert.showAndWait();
+        alert.showAndWait(); // Muestra la alerta y espera a que el usuario la cierre
     }
 
+    // Cierra la aplicación al dar clic en "Salir"
     @FXML
     private void alDarSalir(ActionEvent e) {
         Stage stage = (Stage) botonSalir.getScene().getWindow();
