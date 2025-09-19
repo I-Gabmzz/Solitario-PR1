@@ -1,6 +1,8 @@
 package DeckOfCards;
 
-public class Pila<T> {
+import java.util.Iterator;
+
+public class Pila<T> implements Iterable<T> {
     private T[] pila;
     private int tope;
     private int size;
@@ -40,6 +42,24 @@ public class Pila<T> {
             throw new IllegalStateException("La pila está vacía");
         }
         return pila[tope];
+    }
+
+    public Iterator<T> iterator() {
+        return new Iterator<T>() {
+            private int indice = tope;
+
+            @Override
+            public boolean hasNext() {
+                return indice >= 0;
+            }
+
+            @Override
+            public T next() {
+                if(estaVacia()) {
+                }
+                return pila[indice++];
+            }
+        };
     }
 
     public boolean estaVacia() {
