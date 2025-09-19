@@ -1,7 +1,6 @@
 package solitaire;
 
 import DeckOfCards.CartaInglesa;
-import DeckOfCards.Pila;
 
 import java.util.ArrayList;
 /**
@@ -12,22 +11,21 @@ import java.util.ArrayList;
  * @version (2025-2)
  */
 public class WastePile {
-    private Pila<CartaInglesa> cartas;
+    private ArrayList<CartaInglesa> cartas;
 
     public WastePile() {
-        cartas = new Pila<>(52);
+        cartas = new ArrayList<>();
     }
 
     public void addCartas(ArrayList<CartaInglesa> nuevas) {
-        for (CartaInglesa carta : nuevas) {
-            cartas.push(carta);
-        }
-   }
+        cartas.addAll(nuevas);
+    }
 
     public ArrayList<CartaInglesa> emptyPile() {
         ArrayList<CartaInglesa> pile = new ArrayList<>();
-        while (!cartas.estaVacia()) {
-            pile.add(cartas.pop());
+        if (!cartas.isEmpty()) {
+            pile.addAll(cartas);
+            cartas = new ArrayList<>();
         }
         return pile;
     }
@@ -37,26 +35,27 @@ public class WastePile {
      * @return Carta que está encima. Si está vacía, es null.
      */
     public CartaInglesa verCarta() {
-        if (cartas.estaVacia()) {
-            return null;
+        CartaInglesa regresar = null;
+        if (!cartas.isEmpty()) {
+            regresar = cartas.getLast();
         }
-        return cartas.peek();
+        return regresar;
     }
-
     public CartaInglesa getCarta() {
-        if (!cartas.estaVacia()) {
-            return cartas.pop();
+        CartaInglesa regresar = null;
+        if (!cartas.isEmpty()) {
+            regresar = cartas.removeLast();
         }
-        return null;
+        return regresar;
     }
 
     @Override
     public String toString() {
         StringBuilder stb = new StringBuilder();
-        if (cartas.estaVacia()) {
+        if (cartas.isEmpty()) {
             stb.append("---");
         } else {
-            CartaInglesa regresar = cartas.peek();
+            CartaInglesa regresar = cartas.getLast();
             regresar.makeFaceUp();
             stb.append(regresar.toString());
         }
@@ -64,6 +63,6 @@ public class WastePile {
     }
 
     public boolean hayCartas() {
-        return !cartas.estaVacia();
+        return !cartas.isEmpty();
     }
 }
