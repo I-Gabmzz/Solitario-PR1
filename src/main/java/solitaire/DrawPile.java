@@ -94,12 +94,13 @@ public class DrawPile {
      */
     public void recargar(ArrayList<CartaInglesa> cartasAgregar) {
         cartas = new Pila<>(cartasAgregar.size());
-        for (int i = cartasAgregar.size() - 1; i >= 0; i--) {
+        for (int i = 0; i < cartasAgregar.size(); i++) {
             CartaInglesa aCarta = cartasAgregar.get(i);
             aCarta.makeFaceDown();
             cartas.push(aCarta);
         }
     }
+
 
     @Override
     public String toString() {
