@@ -2,9 +2,8 @@ package solitaire;
 
 import DeckOfCards.CartaInglesa;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
+import DeckOfCards.Pila;
 
 
 public class ControlDeMovimientos {
@@ -16,7 +15,7 @@ public class ControlDeMovimientos {
     public boolean volteo = false;
     public CartaInglesa carta;
     public ArrayList<CartaInglesa> cartas;
-    private static final Deque<ControlDeMovimientos> pila = new ArrayDeque<>();
+    private static final Pila<ControlDeMovimientos> pila = new Pila<>(10000); // capacidad a tu gusto
 
     private static ControlDeMovimientos rastrearMovimiento(String tipo,
                                                            int origen, int destino, int foundation,
@@ -58,14 +57,14 @@ public class ControlDeMovimientos {
     }
 
     public static boolean puedeDeshacer() {
-        return !pila.isEmpty();
+        return !pila.estaVacia();
     }
 
     public static boolean deshacer(DrawPile draw,
                                    WastePile waste,
                                    FoundationDeck[] foundations,
                                    TableauDeck[] tablero) {
-        if (pila.isEmpty()) return false;
+        if (pila.estaVacia()) return false;
 
         ControlDeMovimientos movimiento = pila.pop();
 
