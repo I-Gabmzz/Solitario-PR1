@@ -110,7 +110,7 @@ public class DrawPile {
         return "@";
     }
 
-    // Devuelve n cartas desde el tope de draw hacia waste (boca arriba)
+    // Devuelve n cartas desde el tope de draw hacia waste
     public ArrayList<CartaInglesa> sacarParaWaste(int n) {
         ArrayList<CartaInglesa> sacadas = new ArrayList<>();
         int max = Math.min(n, cartas.tamañoDePila());
@@ -122,6 +122,7 @@ public class DrawPile {
         return sacadas;
     }
 
+    // Se encarga de regresar las cartas del waste, se acomodan en inverso y se voltean, conservando su estado
     public void regresarDesdeWaste(ArrayList<CartaInglesa> devueltas) {
         for (int i = devueltas.size() - 1; i >= 0; i--) {
             CartaInglesa carta = devueltas.get(i);

@@ -198,6 +198,7 @@ public class TableauDeck {
         return cartas;
     }
 
+    // Metodo el cual quita hasta cierto numero de cartas del final respetando el orden y lo devuelve
     public ArrayList<CartaInglesa> removerUltimasSinVoltear(int n) {
         ArrayList<CartaInglesa> bloque = new ArrayList<>();
         int max = Math.min(n, cartas.size());
@@ -208,14 +209,17 @@ public class TableauDeck {
         return bloque;
     }
 
+    // Se encarga de insertar todas las cartas de un bloque de cartas sin validar ni voltear
     public void agregarBloqueDeCartasForzado(ArrayList<CartaInglesa> bloque) {
         cartas.addAll(bloque);
     }
 
+    // Se encarga de insertar una carta al final sin validar ni voltear
     public void agregarCartaForzado(CartaInglesa carta) {
         cartas.add(carta);
     }
 
+    // Metodo el cual si hay alguna carta la voltea boca abajo, especificamente la ultima de la columna
     public void voltearUltimaFaceDown() {
         if (!cartas.isEmpty()) {
             cartas.get(cartas.size() - 1).makeFaceDown();

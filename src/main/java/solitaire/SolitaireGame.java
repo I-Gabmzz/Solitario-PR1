@@ -36,7 +36,7 @@ public class SolitaireGame {
         ArrayList<CartaInglesa> todas = getWastePile().emptyPile();
         if (todas.isEmpty()) return 0;
         getDrawPile().recargar(todas);
-        ControlDeMovimientos.registrar(ControlDeMovimientos.recargar(todas.size()));
+        ControlDeMovimientos.registrar(ControlDeMovimientos.recargar(todas.size())); // Registro de movimiento y recarga de cartas al mazo
         return todas.size();
     }
 
@@ -49,7 +49,7 @@ public class SolitaireGame {
         ArrayList<CartaInglesa> sacadas = getDrawPile().retirarCartas();
         if (sacadas.isEmpty()) return 0;
         getWastePile().addCartas(sacadas);
-        ControlDeMovimientos.registrar(ControlDeMovimientos.draw(sacadas.size()));
+        ControlDeMovimientos.registrar(ControlDeMovimientos.draw(sacadas.size())); // Registro de movimiento
         return sacadas.size();
     }
 

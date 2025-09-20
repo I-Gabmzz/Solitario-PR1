@@ -23,7 +23,7 @@ public class ControladorDeTablero {
 
     private solitaire.SolitaireGame juego; // Como atributo tiene al juego logíco
     private boolean juegoTerminadoMostrado = false; // Atributo que indíca el estado del juego
-    private boolean undoEnProgreso = false;
+    private boolean undoEnProgreso = false; // Atributo que indica si hay algun undo en progreso
 
 
     // Elementos de la interfaz
@@ -106,7 +106,7 @@ public class ControladorDeTablero {
         botonNuevo.setPrefSize(240, 60);
         botonMenu.setPrefSize(200, 60);
         botonUndo.setPrefSize(200, 60);
-        actualizarBotonUndo();
+        actualizarBotonUndo(); // Actualiza el boton undo para su uso de nuevo
 
         var url = getClass().getResource("/GUI/Tablero.jpg");
         if (url != null) {
@@ -651,7 +651,7 @@ public class ControladorDeTablero {
 
             ControlDeMovimientos.registrar(
                     ControlDeMovimientos.tabAlTab(info.col, destinoCol, bloque.size(), volteo)
-            );
+            ); // Se registra y se guarda el movimiento realizado
             actualizarBotonUndo();
             return true;
 
@@ -727,7 +727,7 @@ public class ControladorDeTablero {
 
                 ControlDeMovimientos.registrar(
                         ControlDeMovimientos.tabAlFound(info.col, destinoCol, top, volteo)
-                );
+                ); // Se registra y se guarda el movimiento realizado
                 verificarVictoria();
                 actualizarBotonUndo();
                 return true;
@@ -779,11 +779,13 @@ public class ControladorDeTablero {
         });
     }
 
+    // Metodo que habilita el boton de undo nuevamente despues de hacer uno
     private void actualizarBotonUndo() {
         boolean habilitar = ControlDeMovimientos.puedeDeshacer();
         botonUndo.setDisable(!habilitar);
     }
 
+    // Metodo el cual hace posible la acción de undo una vez que se presiona el boton.
     @FXML
     private void alPresionarUndo() {
         if (undoEnProgreso) return;
