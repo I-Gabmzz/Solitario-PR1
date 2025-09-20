@@ -809,8 +809,4 @@ public class ControladorDeTablero {
             actualizarBotonUndo();
         }
     }
-
-
-
-
 }
