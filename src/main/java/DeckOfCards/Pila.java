@@ -21,12 +21,6 @@ public class Pila<T> implements Iterable<T> {
         pila[tope] = dato;
     }
 
-    public void pushTodo(Pila<T> otraPila) {
-        for (int i = 0; i <= otraPila.tope; i++) {
-            this.push(otraPila.pila[i]);
-        }
-    }
-
     public T pop() {
         if(estaVacia()) {
             throw new IllegalStateException("La pila está vacía");

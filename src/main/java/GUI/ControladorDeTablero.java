@@ -11,6 +11,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.scene.control.Button;
+import solitaire.ControlDeMovimientos;
+
 import java.io.IOException;
 import java.util.Objects;
 import static GUI.DragInfo.decode;
@@ -21,6 +23,8 @@ public class ControladorDeTablero {
 
     private solitaire.SolitaireGame juego; // Como atributo tiene al juego logíco
     private boolean juegoTerminadoMostrado = false; // Atributo que indíca el estado del juego
+    private boolean undoEnProgreso = false;
+
 
     // Elementos de la interfaz
     @FXML
@@ -39,6 +43,8 @@ public class ControladorDeTablero {
     private Button botonNuevo;
     @FXML
     private Button botonMenu;
+    @FXML
+    private Button botonUndo;
 
     // Controladores de las cartas en las columnas (slots visibles)
     @FXML
@@ -99,6 +105,8 @@ public class ControladorDeTablero {
         centro.setSpacing(32);
         botonNuevo.setPrefSize(240, 60);
         botonMenu.setPrefSize(200, 60);
+        botonUndo.setPrefSize(200, 60);
+        actualizarBotonUndo();
 
         var url = getClass().getResource("/GUI/Tablero.jpg");
         if (url != null) {
@@ -114,6 +122,7 @@ public class ControladorDeTablero {
         }
         darEstiloAlBoton(botonNuevo);
         darEstiloAlBoton(botonMenu);
+        darEstiloAlBoton(botonUndo);
         columnasPanes = java.util.List.of(col1, col2, col3, col4, col5, col6, col7);
 
 
@@ -450,12 +459,15 @@ public class ControladorDeTablero {
         // Clic en el mazo: roba cartas o recarga si ya no hay
         contMazo.setOnMouseClicked(e -> {
             if (juego.getDrawPile() != null && juego.getDrawPile().hayCartas()) {
-                juego.drawCards();
+                int n = juego.drawCards();
+                if (n > 0) actualizarBotonUndo();
             } else {
-                juego.reloadDrawPile();
+                int n = juego.reloadDrawPile();
+                if (n > 0) actualizarBotonUndo();
             }
             actualizarZonaSuperior(juego);
         });
+
 
         // Drop en columnas del tablero
         Pane[] columnas = new Pane[]{ col1, col2, col3, col4, col5, col6, col7 };
@@ -618,21 +630,54 @@ public class ControladorDeTablero {
         var comprobacion = tablero.get(destinoCol);
 
         if (info.origen == GUI.DragInfo.Origen.TABLERO) {
-            var infoTablero = tablero.get(info.col);
-            DeckOfCards.CartaInglesa primera = infoTablero.viewCardStartingAt(info.valor);
+            var origenTd = tablero.get(info.col);
+
+            DeckOfCards.CartaInglesa primera = origenTd.viewCardStartingAt(info.valor);
             if (primera == null) return false;
             if (!comprobacion.sePuedeAgregarCarta(primera)) return false;
-            java.util.ArrayList<DeckOfCards.CartaInglesa> bloque = infoTablero.removeStartingAt(info.valor);
-            return comprobacion.agregarBloqueDeCartas(bloque);
+
+            DeckOfCards.CartaInglesa antes = origenTd.getUltimaCarta();
+
+            java.util.ArrayList<DeckOfCards.CartaInglesa> bloque = origenTd.removeStartingAt(info.valor);
+
+            boolean ok = comprobacion.agregarBloqueDeCartas(bloque);
+            if (!ok) {
+                origenTd.agregarBloqueDeCartas(bloque);
+                return false;
+            }
+
+            DeckOfCards.CartaInglesa despues = origenTd.getUltimaCarta();
+            boolean volteo = (antes != despues) && (despues != null) && despues.isFaceup();
+
+            ControlDeMovimientos.registrar(
+                    ControlDeMovimientos.tabAlTab(info.col, destinoCol, bloque.size(), volteo)
+            );
+            actualizarBotonUndo();
+            return true;
+
         } else {
             var descarte = juego.getWastePile();
-            DeckOfCards.CartaInglesa carta = (descarte != null) ? descarte.verCarta() : null;
-            if (carta == null) return false;
-            if (!comprobacion.sePuedeAgregarCarta(carta)) return false;
-            carta = descarte.getCarta();
-            return comprobacion.agregarCarta(carta);
+            DeckOfCards.CartaInglesa cartaTop = (descarte != null) ? descarte.verCarta() : null;
+            if (cartaTop == null) return false;
+            if (!comprobacion.sePuedeAgregarCarta(cartaTop)) return false;
+
+            cartaTop = descarte.getCarta(); // extrae de waste
+            boolean ok = comprobacion.agregarCarta(cartaTop);
+            if (!ok) {
+                java.util.ArrayList<DeckOfCards.CartaInglesa> una = new java.util.ArrayList<>();
+                una.add(cartaTop);
+                descarte.addCartas(una);
+                return false;
+            }
+
+            ControlDeMovimientos.registrar(
+                    ControlDeMovimientos.mazoAlTab(cartaTop, destinoCol)
+            );
+            actualizarBotonUndo();
+            return true;
         }
     }
+
 
     // Valida si una carta puede soltarse en una base
     private boolean puedeSoltarseEnFoundation(DragInfo info, int destinoCol) {
@@ -669,27 +714,44 @@ public class ControladorDeTablero {
 
         if (info.origen == GUI.DragInfo.Origen.TABLERO) {
             if (!info.esTope) return false;
-            var tableroInfo = juego.getTableau().get(info.col);
-            DeckOfCards.CartaInglesa top = tableroInfo.getUltimaCarta();
+
+            var origenTd = juego.getTableau().get(info.col);
+            DeckOfCards.CartaInglesa top = origenTd.getUltimaCarta();
             if (top == null) return false;
+
             if (base.agregarCarta(top)) {
-                tableroInfo.removerUltimaCarta();
+                DeckOfCards.CartaInglesa antes = top;
+                origenTd.removerUltimaCarta();
+                DeckOfCards.CartaInglesa expuesta = origenTd.getUltimaCarta();
+                boolean volteo = (expuesta != null) && expuesta.isFaceup();
+
+                ControlDeMovimientos.registrar(
+                        ControlDeMovimientos.tabAlFound(info.col, destinoCol, top, volteo)
+                );
                 verificarVictoria();
+                actualizarBotonUndo();
                 return true;
             }
             return false;
+
         } else {
             var descarte = juego.getWastePile();
             DeckOfCards.CartaInglesa top = (descarte != null) ? descarte.verCarta() : null;
             if (top == null) return false;
+
             if (base.agregarCarta(top)) {
                 descarte.getCarta();
+                ControlDeMovimientos.registrar(
+                        ControlDeMovimientos.mazoAlFound(top, destinoCol)
+                );
                 verificarVictoria();
+                actualizarBotonUndo();
                 return true;
             }
             return false;
         }
     }
+
 
     // Metodo que permite conocer si ya se cumplio la condicion de victoria
     private boolean yaSeGano() {
@@ -716,5 +778,37 @@ public class ControladorDeTablero {
             }
         });
     }
+
+    private void actualizarBotonUndo() {
+        boolean habilitar = ControlDeMovimientos.puedeDeshacer();
+        botonUndo.setDisable(!habilitar);
+    }
+
+    @FXML
+    private void alPresionarUndo() {
+        if (undoEnProgreso) return;
+        if (!ControlDeMovimientos.puedeDeshacer()) return;
+
+        undoEnProgreso = true;
+        botonUndo.setDisable(true);
+        try {
+            boolean hecho = ControlDeMovimientos.deshacer(
+                    juego.getDrawPile(),
+                    juego.getWastePile(),
+                    juego.getFoundation().toArray(new solitaire.FoundationDeck[0]),
+                    juego.getTableau().toArray(new solitaire.TableauDeck[0])
+            );
+            if (hecho) {
+                actualizarZonaSuperior(juego);
+                actualizarTablero(juego);
+            }
+        } finally {
+            undoEnProgreso = false;
+            actualizarBotonUndo();
+        }
+    }
+
+
+
 
 }

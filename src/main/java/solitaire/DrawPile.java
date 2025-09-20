@@ -109,4 +109,25 @@ public class DrawPile {
         }
         return "@";
     }
+
+    // Devuelve n cartas desde el tope de draw hacia waste (boca arriba)
+    public ArrayList<CartaInglesa> sacarParaWaste(int n) {
+        ArrayList<CartaInglesa> sacadas = new ArrayList<>();
+        int max = Math.min(n, cartas.tamañoDePila());
+        for (int i = 0; i < max; i++) {
+            CartaInglesa carta = cartas.pop();
+            carta.makeFaceUp();
+            sacadas.add(carta);
+        }
+        return sacadas;
+    }
+
+    public void regresarDesdeWaste(ArrayList<CartaInglesa> devueltas) {
+        for (int i = devueltas.size() - 1; i >= 0; i--) {
+            CartaInglesa carta = devueltas.get(i);
+            carta.makeFaceDown();
+            cartas.push(carta);
+        }
+    }
+
 }

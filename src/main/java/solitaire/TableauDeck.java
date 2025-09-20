@@ -197,4 +197,30 @@ public class TableauDeck {
     public ArrayList<CartaInglesa> getCards() {
         return cartas;
     }
+
+    public ArrayList<CartaInglesa> removerUltimasSinVoltear(int n) {
+        ArrayList<CartaInglesa> bloque = new ArrayList<>();
+        int max = Math.min(n, cartas.size());
+        for (int i = 0; i < max; i++) {
+            CartaInglesa carta = cartas.remove(cartas.size() - 1);
+            bloque.add(0, carta);
+        }
+        return bloque;
+    }
+
+    public void agregarBloqueDeCartasForzado(ArrayList<CartaInglesa> bloque) {
+        cartas.addAll(bloque);
+    }
+
+    public void agregarCartaForzado(CartaInglesa carta) {
+        cartas.add(carta);
+    }
+
+    public void voltearUltimaFaceDown() {
+        if (!cartas.isEmpty()) {
+            cartas.get(cartas.size() - 1).makeFaceDown();
+        }
+    }
+
+
 }

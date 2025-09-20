@@ -28,19 +28,31 @@ public class SolitaireGame {
 
     /**
      * Move cards from Waste pile to Draw Pile.
+     *
+     * @return
      */
-    public void reloadDrawPile() {
-        ArrayList<CartaInglesa> cards = wastePile.emptyPile();
-        drawPile.recargar(cards);
+    public int reloadDrawPile() {
+        if (getWastePile() == null || getDrawPile() == null) return 0;
+        ArrayList<CartaInglesa> todas = getWastePile().emptyPile();
+        if (todas.isEmpty()) return 0;
+        getDrawPile().recargar(todas);
+        ControlDeMovimientos.registrar(ControlDeMovimientos.recargar(todas.size()));
+        return todas.size();
     }
+
 
     /**
      * Move cards from Draw pile to Waste Pile.
      */
-    public void drawCards() {
-        ArrayList<CartaInglesa> cards = drawPile.retirarCartas();
-        wastePile.addCartas(cards);
+    public int drawCards() {
+        if (getDrawPile() == null) return 0;
+        ArrayList<CartaInglesa> sacadas = getDrawPile().retirarCartas();
+        if (sacadas.isEmpty()) return 0;
+        getWastePile().addCartas(sacadas);
+        ControlDeMovimientos.registrar(ControlDeMovimientos.draw(sacadas.size()));
+        return sacadas.size();
     }
+
 
     /**
      * Tomar la carta del Waste pile y ponerla en el tableau
