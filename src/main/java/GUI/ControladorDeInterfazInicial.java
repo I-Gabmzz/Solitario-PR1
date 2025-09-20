@@ -123,7 +123,7 @@ public class ControladorDeInterfazInicial {
         alert.setContentText("Creador: Angel Gabriel Manjarrez Moreno \n" +
                 "Matricula: 1197503 \n" +
                 "Materia: Algoritmos y Estructuras de datos \n" +
-                "Versión: 5 de septiembre de 2025");
+                "Versión: 19 de septiembre de 2025");
         alert.showAndWait(); // Muestra la alerta y espera a que el usuario la cierre
     }
 
